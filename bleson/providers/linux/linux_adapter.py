@@ -210,7 +210,7 @@ class BluetoothHCIAdapter(Adapter):
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Parameters Set');
 
-        elif data[5] << 8 + data[4] == LE_SET_SCAN_ENABLE_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_SCAN_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Enable Set')
 
@@ -218,13 +218,13 @@ class BluetoothHCIAdapter(Adapter):
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Parameters Set')
 
-        elif (data[5] << 8 + data[4]) == LE_SET_ADVERTISING_DATA_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_ADVERTISING_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Data Set')
-        elif data[5] << 8 + data[4] == LE_SET_SCAN_RESPONSE_DATA_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_SCAN_RESPONSE_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Response Data Set')
-        elif data[5] << 8 + data[4] == LE_SET_ADVERTISE_ENABLE_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_ADVERTISE_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertise Enable Set')
 
@@ -232,7 +232,7 @@ class BluetoothHCIAdapter(Adapter):
         log.debug("EVT_DISCONN_COMPLETE")
         disconn_info = dict(
             status=data[3],
-            handle=data[5] << 8 + data[4],
+            handle=(data[5] << 8) + data[4],
             reason=data[6]
         )
         log.debug(disconn_info)
