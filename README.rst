@@ -38,57 +38,31 @@ Outline of the 'bleson' Python packages an end-user would use to play with Bluet
 Examples
 ========
 
-Examples are abbreviated below, plese see 'examples' folder for more details.
+Please see 'examples' folder for more details.
+Examples prefixed with 'basic_' shows basic API usage.
+Examples prefixed with 'context_' shows 'with context' API usage.
+
 
 Example - Advertiser
 --------------------
 
-.. code:: python
-
-    from bleson import get_provider, Advertiser, Advertisement
-
-    adapter = get_provider().get_adapter()
-    advertiser = Advertiser(adapter)
-    advertisement = Advertisement(name = "bleson")
-    advertiser.start()
-    advertiser.stop()
-
+Shows how to create custom advertisement.
 
 Example - Eddystone Beacon
 --------------------------
 
-.. code:: python
-
-    from bleson import get_provider, EddystoneBeacon
-
-    adapter = get_provider().get_adapter()
-    beacon = EddystoneBeacon(adapter)
-    beacon.url = 'https://www.bluetooth.com/'
-    beacons.start()
-    beacons.stop()
-
+Shows how to setup a Physical Web beacon
 
 Example - Observer
 ------------------
 
-.. code:: python
+Shows how to scan for local devices.
 
-    from bleson import get_provider, Observer
-
-    adapter = get_provider().get_adapter()
-
-    def on_advertisement(advertisement):
-        print(advertisement)
-
-    observer = Observer(adapter)
-    observer.on_advertising_data = on_advertisement
-    observer.start()
-    observer.stop()
 
 Tests
 =====
 
-Please see the testsuite in the 'tests' folder.
+Please see the 'tests' folder.
 
 
 Internal API
