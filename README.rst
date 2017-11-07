@@ -39,8 +39,8 @@ Examples
 ========
 
 Please see 'examples' folder for more details.
-Examples prefixed with 'basic_' shows basic API usage.
-Examples prefixed with 'context_' shows 'with context' API usage.
+Examples prefixed with 'basic_' shows basic Bleson API usage.
+Examples prefixed with 'context_' shows Blesons context maanger ('with' keyword) API usage.
 
 
 Example - Advertiser
