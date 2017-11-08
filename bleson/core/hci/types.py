@@ -13,14 +13,31 @@ class HCIPayload:
         self._parse_data()
 
     def add_item(self, tag, value):
-        log.debug("'{}' = {}".format(tag, value))
-        newdata = self.data + struct.pack("<BB", 1+len(value), tag) + bytes(value)
-        log.debug(newdata)
-        if len(newdata) <= 31:
-            self.data = newdata
+        """
+        :param tag:    HCI packet type
+        :param value:  array of byte-like data or homogeneous array of 'ValueObjects'
+        :return:       self
+        """
+        from bleson import ValueObject
+        log.debug("tag={} len={} data={} data={}".format(tag, len(value), type(value), value))
+
+        if all(isinstance(item, ValueObject) for item in value):
+            new_len=0
+            for vo in value:
+                log.debug("VO len={} data={} bytes={}".format(len(vo), vo, bytes(vo)))
+                new_len += len(vo)
+
+            new_data = self.data + struct.pack("<BB", 1 + new_len, tag) + bytes(vo)
+        else:
+            new_data = self.data + struct.pack("<BB", 1 + len(value), tag) + bytes(value)
+
+        log.debug("New len={} data={}".format(len(new_data), new_data))
+
+        if len(new_data) <= 31:
+            self.data = new_data
             self.tags[tag] = value
         else:
-            raise IndexError("Supplied advertising data too long (%d bytes total)", len(newdata))
+            raise IndexError("Supplied advertising data too long (%d bytes total)", len(new_data))
         return self
 
     def __iter__(self):

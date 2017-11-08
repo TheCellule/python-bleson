@@ -4,13 +4,11 @@ import socket
 import struct
 import threading
 
-from bleson.core.hci import parse_hci_event_packet
 from bleson.core.hci.constants import *
-from bleson.core.hci.type_converters import AdvertisingDataConverters
+from bleson.core.hci.type_converters import AdvertisingDataConverters, parse_hci_event_packet, hex_string
 from bleson.core.types import Device, BDAddress
 from bleson.interfaces.adapter import Adapter
 from bleson.logger import log
-from bleson.utils import hex_string
 from .constants import *
 
 

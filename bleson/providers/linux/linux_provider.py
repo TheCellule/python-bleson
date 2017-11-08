@@ -12,4 +12,4 @@ class LinuxProvider(Provider):
         adapter.on()
         return adapter
 
-
+    # TODO: have a 'get_converter(for_type)' and registry of ValueObject to provider data converters (Linux uses core HCI)

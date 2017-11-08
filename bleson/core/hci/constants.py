@@ -139,6 +139,19 @@ GAP_MFG_DATA = 0xFF
 
 
 
+# see: https://github.com/ARMmbed/ble/blob/8d97fced5440d78c9557693b6d1632f1ab5d77b7/ble/GapAdvertisingData.h
+
+LE_LIMITED_DISCOVERABLE = 0x01 #, /**< Peripheral device is discoverable for a limited period of time. */
+LE_GENERAL_DISCOVERABLE = 0x02 #, /**< Peripheral device is discoverable at any moment. */
+BREDR_NOT_SUPPORTED     = 0x04 #, /**< Peripheral device is LE only. */
+SIMULTANEOUS_LE_BREDR_C = 0x08 #, /**< Not relevant - central mode only. */
+SIMULTANEOUS_LE_BREDR_H = 0x10 # /**< Not relevant - central mode only. */
+
+
+# https://github.com/ARMmbed/ble/blob/8d97fced5440d78c9557693b6d1632f1ab5d77b7/ble/GapAdvertisingData.h
+
+
+
 HCI_LE_META_EVENT = 0x3e
 
 HCI_LE_META_EVENTS = {

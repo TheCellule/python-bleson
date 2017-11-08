@@ -1,4 +1,5 @@
 from bleson.logger import log
+from uuid import UUID
 
 # Collection of value objects.
 
@@ -7,18 +8,121 @@ from bleson.logger import log
 # Object equlity is not based on the objects address, but instead for example, may be based on a MAC (BDAddress)
 
 class ValueObject(object):
-    pass
 
-    # speculative... better placed elsewhere...
-    # def from_hci(self):
-    #     pass
-    #
-    # def to_hci(self):
-    #     pass
+    def __bytes__(self):
+        raise NotImplementedError
+
+    def __len__(self):
+        raise NotImplementedError
+
+    # TODO: create from bytes, __init__
+
+
+class UUID16(ValueObject):
+
+    def __init__(self, uuid):
+        """ Crate UUID16, non-int types are assumed to be little endian (reverse order)"""
+
+        log.debug(("UUID16 type: {}".format(type(uuid))))
+        if isinstance(uuid, int):
+            if not 0 < uuid < 0xffff:
+                raise ValueError('Invalid UUID16 value {}'.format(uuid))
+
+        elif isinstance(uuid, list) or isinstance(uuid, tuple):
+            if len(uuid) != 2:
+                raise ValueError('Unexpected address length of {} for {}'.format(len(uuid), uuid))
+            uuid = (uuid[1] << 8) + (uuid[0] & 0xff)
+        elif isinstance(uuid, bytes) or isinstance(uuid, bytearray):
+            if len(uuid) != 2:
+                raise ValueError('Unexpected address length of {} for {}'.format(len(uuid), uuid))
+            uuid = (uuid[1] << 8) + (uuid[0] & 0xff)
+        else:
+            raise TypeError('Unsupported UUID16 initialiser type: {}'.format(type(uuid)))
+
+        self._uuid=uuid
+        log.debug(self)
+
+    def __hash__(self):
+        return self._uuid
+
+    def __eq__(self, other):
+        return isinstance(other, UUID16) and self._uuid == other._uuid
+
+    def __repr__(self):
+        return "UUID16(0x{:02x})".format(self._uuid)
+
+    def __bytes__(self):
+        return bytes([self._uuid & 0xff, (self._uuid >>8) & 0xff])
+
+    def __len__(self):
+        return 2
+
+    @property
+    def uuid(self):
+        return self._uuid
+
+    @uuid.setter
+    def uuid(self, uuid):
+        raise NotImplemented
+
+
+class UUID128(ValueObject):
+
+    def __init__(self, uuid):
+        """ Crate UUID128, non-int types are assumed to be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
+
+        # TODO: accept 32bit and convert,  xxxxxxxx-0000-1000-8000-00805F9B34FB
+        log.debug(("UUID128 type: {}".format(type(uuid))))
+
+        if isinstance(uuid, int):
+            if not 0 < uuid < 0xffff:
+                raise ValueError('Invalid UUID16 value {} fro UUID128 promotion'.format(uuid))
+            uuid = UUID("0000{:04x}-0000-1000-8000-00805F9B34FB".format(uuid)).hex
+
+        elif isinstance(uuid, str):
+            if not len(uuid) == 36:
+                raise ValueError('Invalid UUID128 value {}'.format(uuid))
+
+        elif isinstance(uuid, list) or isinstance(uuid, tuple) or isinstance(uuid, bytes) or isinstance(uuid, bytearray):
+            if len(uuid) != 16:
+                raise ValueError('Unexpected address length of {} for {}'.format(len(uuid), uuid))
+            uuid = ''.join([format(c, '02x') for c in reversed(uuid)] )
+        else:
+            raise TypeError('Unsupported UUID128 initialiser type: {}'.format(type(uuid)))
+
+        self._uuid_obj = UUID(uuid)
+
+        self._uuid=self._uuid_obj.urn.replace('urn:uuid:', '')
+        log.debug(self)
+
+    def __hash__(self):
+        return self._uuid
+
+    def __eq__(self, other):
+        return isinstance(other, UUID128) and self._uuid == other._uuid
+
+    def __repr__(self):
+        return "UUID128('{}')".format(self._uuid)
+
+
+    def __bytes__(self):
+        return bytes(reversed(self._uuid_obj.bytes))
+
+    def __len__(self):
+        return len(self._uuid_obj.bytes)
+
+    @property
+    def uuid(self):
+        return self._uuid
+
+    @uuid.setter
+    def uuid(self, uuid):
+        raise NotImplemented
 
 
 class BDAddress(ValueObject):
 
+    # TODO:  add an overide for little_endian=True\False flag, default True, for list-like types
     def __init__(self, address:str=None):
         # expect a string of the format "xx:xx:xx:xx:xx:xx"
         # or a 6 element; tuple, list, bytes or bytearray
@@ -75,35 +179,35 @@ class Advertisement(ValueObject):
     def __init__(self, name=None, address=None, rssi=None, tx_power=None, raw_data=None):
         #TODO: use kwargs
         self.flags      =   6   # uint8         # default to LE_GENERAL_DISCOVERABLE | BREDR_NOT_SUPPORTED
+        self.type = None
+        self.address_type = None
+        self.address = address
+        self._name = name
+        self.name_is_complete   = False     # unsigned
+        self.tx_pwr_lvl = tx_power  # unsigned
+        self.appearance     = None      # unit16
         self.uuid16s    =   None  # uuid16[]
         self.uuid32s    =   None  # uuid32[]
         self.uuid128s   =   None  # uuid12[]
-        self.name = name
-        self.name_is_complete   = False     # unsigned
-        self.tx_pwr_lvl = tx_power  # unsigned
+        self.service_data = None
         #slave_itvl_range
         self.svc_data_uuid16 = None       # uuid16[]
         self.public_tgt_addr = None       #  uint8[]
-        self.appearance     = None      # unit16
         self.adv_itvl = None        # uint16
         self.svc_data_uuid32 = None # uint8
         self.svc_data_uuid128 = None # uint8
         self.uri    =   None        # unit8
         self.mfg_data = None        # unit8
-        self.service_data = None    # TODO: check this...
-        self.type = None
-        self.address_type = None
-        self.address = address
-        self.eir = None
-        self.rssi = rssi
+        self.rssi = rssi            # really only part of an Advertisement Report...
 
         self.raw_data = raw_data
         log.debug(self)
 
 
     def __repr__(self):
-        # TODO: UUID's, appearance etc...
-        return "Advertisement(flags=0x{:02x}, name={}, rssi={})".format(self.flags, self.name, self.rssi)
+        # TODO: appearance etc...
+        return "Advertisement(flags=0x{:02x}, name={}, txpower={} uuid16s={} uuid128s={} rssi={})".format(
+            self.flags, self.name, self.tx_pwr_lvl, self.uuid16s, self.uuid128s, self.rssi)
 
 
     @property
@@ -118,7 +222,7 @@ class Advertisement(ValueObject):
             self._name = str(name)  # unit8
 
 
-class ScanResponse(ValueObject):
+class ScanResponse(Advertisement):
     pass
 
 
