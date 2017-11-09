@@ -13,9 +13,11 @@ def get_provider():
         if sys.platform.startswith('linux'):
             from bleson.providers.linux.linux_provider import LinuxProvider
             _provider = LinuxProvider()
-        elif sys.startswith('darwin'):
-            raise NotImplementedError()
-        elif sys.startswith('win32'):
+        elif sys.platform.startswith('darwin'):
+            from bleson.providers.macos.macos_provider import MacOSProvider
+            _provider = MacOSProvider()
+
+        elif sys.platform.startswith('win32'):
             raise NotImplementedError()
         else:
             raise RuntimeError('Platform {0} is not supported!'.format(sys.platform))

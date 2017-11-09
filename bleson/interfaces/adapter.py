@@ -3,6 +3,11 @@ import abc
 class Adapter(object):
     __metaclass__ = abc.ABCMeta
 
+
+    @abc.abstractmethod
+    def open(self):
+        raise NotImplementedError
+
     @abc.abstractmethod
     def on(self):
         raise NotImplementedError
