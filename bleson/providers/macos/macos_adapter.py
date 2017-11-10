@@ -1,7 +1,8 @@
 from bleson.interfaces.adapter import Adapter
-from bleson.core.types import Advertisement
+from bleson.core.types import Advertisement, UUID16, UUID128
+from bleson.core.hci.constants import *
 from bleson.logger import log
-
+from bleson.core.hci.type_converters import bytearray_to_hexstring
 import objc
 from PyObjCTools import AppHelper
 objc.loadBundle("CoreBluetooth", globals(),
@@ -57,14 +58,48 @@ class CoreBluetoothAdapter(Adapter):
             manager.scanForPeripheralsWithServices_options_(None, None)
 
     def centralManager_didDiscoverPeripheral_advertisementData_RSSI_(self, manager, peripheral, data, rssi):
-        log.debug("centralManager_didDiscoverPeripheral_advertisementData_RSSI_")
-        log.debug('Found: name={} rssi={} data={} '.format(peripheral.name(), rssi, data))
+        try:
+            log.debug("centralManager_didDiscoverPeripheral_advertisementData_RSSI_")
+            log.debug('Found: name={} rssi={} data={} '.format(peripheral.name(), rssi, data))
 
-        if self.on_advertising_data:
-            advertisement = Advertisement()
-            advertisement.name = peripheral.name()
-            advertisement.rssi = rssi
-            self.on_advertising_data(advertisement)
+            if self.on_advertising_data:
+                advertisement = Advertisement()
+                advertisement.flags = 0                  # Not available
+                advertisement.name = peripheral.name()
+                advertisement.rssi = rssi
+
+                if 'kCBAdvDataTxPowerLevel' in data:
+                    advertisement.tx_pwr_lvl = int(data['kCBAdvDataTxPowerLevel'])
+
+                if data['kCBAdvDataIsConnectable']:
+                    # TODO: handle: kCBAdvDataIsConnectable correctly
+                    advertisement.type = 0x01 # BLE_GAP_ADV_TYPE_ADV_DIRECT_IND
+
+                if 'kCBAdvDataServiceUUIDs' in data:
+                    log.debug('kCBAdvDataServiceUUIDs:')
+                    for cbuuid in data['kCBAdvDataServiceUUIDs']:
+                        uuid_bytes = cbuuid.data().bytes()
+                        if 2 == len(uuid_bytes):
+                            uuid = UUID16(uuid_bytes, little_endian=False)
+                            advertisement.uuid16s.append(uuid)
+
+                        elif 16 == len(uuid_bytes):
+                            uuid = UUID128(uuid_bytes, little_endian=False)
+                            advertisement.uuid128s.append(uuid)
+                        else:
+                            log.error("Unsupporten UUID length for UUID bytes={}".format(uuid_bytes))
+
+                        log.debug('Service UUID: {} {}'.format(type(cbuuid), cbuuid))
+
+                if 'kCBAdvDataManufacturerData' in data:
+                    mfg_data=data['kCBAdvDataManufacturerData']
+                    log.debug('kCBAdvDataManufacturerData={}'.format(mfg_data))
+                    advertisement.mfg_data=mfg_data
+
+                self.on_advertising_data(advertisement)
+
+        except Exception as e:
+            log.exception(e)
 
 
     def centralManager_didConnectPeripheral_(self, manager, peripheral):

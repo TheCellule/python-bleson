@@ -20,10 +20,13 @@ class ValueObject(object):
 
 class UUID16(ValueObject):
 
-    def __init__(self, uuid):
-        """ Crate UUID16, non-int types are assumed to be little endian (reverse order)"""
+    def __init__(self, uuid, little_endian=True):
+        """ Create UUID16, non-int types are assumed to be little endian (reverse order)"""
 
         log.debug(("UUID16 type: {}".format(type(uuid))))
+        if isinstance(uuid, memoryview):
+            uuid = uuid.tolist()
+
         if isinstance(uuid, int):
             if not 0 < uuid < 0xffff:
                 raise ValueError('Invalid UUID16 value {}'.format(uuid))
@@ -39,6 +42,8 @@ class UUID16(ValueObject):
         else:
             raise TypeError('Unsupported UUID16 initialiser type: {}'.format(type(uuid)))
 
+        if not little_endian:
+            uuid = ( (uuid & 0x00ff) << 8 ) +  ( (uuid & 0xff00) >>8)
         self._uuid=uuid
         log.debug(self)
 
@@ -68,12 +73,19 @@ class UUID16(ValueObject):
 
 class UUID128(ValueObject):
 
-    def __init__(self, uuid):
-        """ Crate UUID128, non-int types are assumed to be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
+    def __init__(self, uuid, little_endian=True):
+        """ Create UUID128, non-int types are assumed to be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
 
         # TODO: accept 32bit and convert,  xxxxxxxx-0000-1000-8000-00805F9B34FB
-        log.debug(("UUID128 type: {}".format(type(uuid))))
+        log.debug(("UUID128 type: {} value={}".format(type(uuid), uuid)))
 
+        if isinstance(uuid, memoryview):
+            if little_endian:
+                uuid = uuid.tolist()
+            else:
+                uuid = list(reversed(uuid.tolist()))
+
+        # Massage 'uuid' into a string that the built-in UUID() contructor accepts
         if isinstance(uuid, int):
             if not 0 < uuid < 0xffff:
                 raise ValueError('Invalid UUID16 value {} fro UUID128 promotion'.format(uuid))
@@ -90,7 +102,9 @@ class UUID128(ValueObject):
         else:
             raise TypeError('Unsupported UUID128 initialiser type: {}'.format(type(uuid)))
 
+
         self._uuid_obj = UUID(uuid)
+
 
         self._uuid=self._uuid_obj.urn.replace('urn:uuid:', '')
         log.debug(self)
@@ -186,9 +200,9 @@ class Advertisement(ValueObject):
         self.name_is_complete   = False     # unsigned
         self.tx_pwr_lvl = tx_power  # unsigned
         self.appearance     = None      # unit16
-        self.uuid16s    =   None  # uuid16[]
-        self.uuid32s    =   None  # uuid32[]
-        self.uuid128s   =   None  # uuid12[]
+        self.uuid16s    =   []  # uuid16[]
+        self.uuid32s    =   []  # uuid32[]
+        self.uuid128s   =   []  # uuid12[]
         self.service_data = None
         #slave_itvl_range
         self.svc_data_uuid16 = None       # uuid16[]
@@ -206,8 +220,8 @@ class Advertisement(ValueObject):
 
     def __repr__(self):
         # TODO: appearance etc...
-        return "Advertisement(flags=0x{:02x}, name={}, txpower={} uuid16s={} uuid128s={} rssi={})".format(
-            self.flags, self.name, self.tx_pwr_lvl, self.uuid16s, self.uuid128s, self.rssi)
+        return "Advertisement(flags=0x{:02x}, name={}, txpower={} uuid16s={} uuid128s={} rssi={} mfg_data={})".format(
+            self.flags, self.name, self.tx_pwr_lvl, self.uuid16s, self.uuid128s, self.rssi, self.mfg_data)
 
 
     @property
