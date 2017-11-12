@@ -1,13 +1,42 @@
+import threading
 from bleson.interfaces.adapter import Adapter
 from bleson.core.types import Advertisement, UUID16, UUID128
 from bleson.core.hci.constants import *
 from bleson.logger import log
 from bleson.core.hci.type_converters import bytearray_to_hexstring
 import objc
+from Foundation import *
 from PyObjCTools import AppHelper
-objc.loadBundle("CoreBluetooth", globals(),
-                bundle_path=objc.pathForFramework(
-                    u'/System/Library/Frameworks/IOBluetooth.framework/Versions/A/Frameworks/CoreBluetooth.framework'))
+import CoreBluetooth
+
+# https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html
+
+# pyobjc:  https://bitbucket.org/ronaldoussoren/pyobjc
+# https://bitbucket.org/ronaldoussoren/pyobjc/src/87ce46672615ef127f40850cc78401ca62cc336a/pyobjc-framework-CoreBluetooth/PyObjCTest/?at=default
+
+# Issue: https://bitbucket.org/ronaldoussoren/pyobjc/issues/215/starting-runconsoleeventloop-from-a
+
+# ObjC diest support dispatchQueues...
+
+# use XPC instead:  https://github.com/sandeepmistry/noble/blob/master/lib/mac/yosemite.js
+
+
+
+# Python XPC
+
+# brew install python3
+# brew install boost-python --with-python3
+# ln -s /usr/local/lib/libboost_python3.a /usr/local/lib/libboost_python-py34.a
+# git clone https://github.com/matthewelse/pyxpcconnection
+# cd pyxpcconnection
+# edit setup.py:
+"""
+-        extra_compile_args=['-std=c++11'],
++        extra_compile_args=['-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.9'],
+         libraries = boost_libs
+"""
+# python3 setup.py install
+
 
 
 class CoreBluetoothAdapter(Adapter):
@@ -16,11 +45,12 @@ class CoreBluetoothAdapter(Adapter):
         self.device_id = device_id
         self.connected = False
         self._keep_running = True
-        self._manager = CBCentralManager.alloc()
-
+        self._socket_poll_thread = threading.Thread(target=self._runloop_thread, name='BlesonObjCRunLoop')
+        self._socket_poll_thread.setDaemon(True)
+        self._manager = None
 
     def open(self):
-        self._manager.initWithDelegate_queue_options_(self, None, None)
+        pass
 
 
     def on(self):
@@ -31,15 +61,14 @@ class CoreBluetoothAdapter(Adapter):
 
     def start_scanning(self):
         log.info("start scanning")
-        try:
-            AppHelper.runConsoleEventLoop(installInterrupt=True)
-        except KeyboardInterrupt:
-            AppHelper.stopEventLoop()
+        self._runloop_thread()
+        #self._socket_poll_thread.start()
+
 
     def stop_scanning(self):
-        self.manager.stopScan()
-        #self.peripheral = peripheral
-        #manager.connectPeripheral_options_(self.peripheral, None)
+        log.info("stopping")
+        rc = AppHelper.stopEventLoop()
+        log.info("done: AppHelper.stopEventLoop, successful?={}".format(rc))
 
     def start_advertising(self, advertisement, scan_response=None):
         raise NotImplementedError
@@ -47,6 +76,30 @@ class CoreBluetoothAdapter(Adapter):
     def stop_advertising(self):
         raise NotImplementedError
 
+    # Obj Runloop
+
+    def _init_cb_manager(self):
+        # objc.loadBundle("CoreBluetooth", globals(),
+        #                 bundle_path=objc.pathForFramework(
+        #                     u'/System/Library/Frameworks/IOBluetooth.framework/Versions/A/Frameworks/CoreBluetooth.framework'))
+
+        self._manager = CoreBluetooth.CBCentralManager.alloc()
+        self._manager.initWithDelegate_queue_options_(self, None, None)
+
+    # https://pythonhosted.org/pyobjc/core/intro.html#working-with-threads
+    def _runloop_thread(self):
+        try:
+            log.info('AppHelper.runConsoleEventLoop()')
+            pool = NSAutoreleasePool.alloc().init()
+            self._init_cb_manager()
+            rc = AppHelper.runConsoleEventLoop(installInterrupt=True)
+            log.info(rc)
+        except Exception as e:
+            log.exception(e)
+        finally:
+            AppHelper.stopEventLoop()
+            del pool
+        log.info("leaving")
 
     # CoreBluetooth Protocol
 
@@ -78,7 +131,12 @@ class CoreBluetoothAdapter(Adapter):
                 if 'kCBAdvDataServiceUUIDs' in data:
                     log.debug('kCBAdvDataServiceUUIDs:')
                     for cbuuid in data['kCBAdvDataServiceUUIDs']:
-                        uuid_bytes = cbuuid.data().bytes()
+                        uuid_bytes2 = cbuuid.data().bytes()
+                        uuid_bytes = cbuuid.data().bytes().tobytes()
+                        log.debug("--------------")
+                        log.debug(bytearray_to_hexstring(uuid_bytes))
+                        log.debug(bytearray_to_hexstring(uuid_bytes2))
+
                         if 2 == len(uuid_bytes):
                             uuid = UUID16(uuid_bytes, little_endian=False)
                             advertisement.uuid16s.append(uuid)

@@ -23,7 +23,7 @@ class UUID16(ValueObject):
     def __init__(self, uuid, little_endian=True):
         """ Create UUID16, non-int types are assumed to be little endian (reverse order)"""
 
-        log.debug(("UUID16 type: {}".format(type(uuid))))
+        log.debug(("UUID16 type: {} value={}".format(type(uuid), uuid)))
         if isinstance(uuid, memoryview):
             uuid = uuid.tolist()
 
@@ -42,8 +42,8 @@ class UUID16(ValueObject):
         else:
             raise TypeError('Unsupported UUID16 initialiser type: {}'.format(type(uuid)))
 
-        if not little_endian:
-            uuid = ( (uuid & 0x00ff) << 8 ) +  ( (uuid & 0xff00) >>8)
+        if not little_endian: # swap
+            uuid = ( (uuid & 0xff) << 8 )  |  ( (uuid & 0xff00) >>8)
         self._uuid=uuid
         log.debug(self)
 
@@ -74,16 +74,13 @@ class UUID16(ValueObject):
 class UUID128(ValueObject):
 
     def __init__(self, uuid, little_endian=True):
-        """ Create UUID128, non-int types are assumed to be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
+        """ Create UUID128, non-int types must be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
 
         # TODO: accept 32bit and convert,  xxxxxxxx-0000-1000-8000-00805F9B34FB
         log.debug(("UUID128 type: {} value={}".format(type(uuid), uuid)))
 
         if isinstance(uuid, memoryview):
-            if little_endian:
-                uuid = uuid.tolist()
-            else:
-                uuid = list(reversed(uuid.tolist()))
+            uuid = uuid.tobytes()
 
         # Massage 'uuid' into a string that the built-in UUID() contructor accepts
         if isinstance(uuid, int):
@@ -104,6 +101,9 @@ class UUID128(ValueObject):
 
 
         self._uuid_obj = UUID(uuid)
+
+        if not little_endian:
+            self._uuid_obj = UUID(bytes=bytes(reversed(self._uuid_obj.bytes)))
 
 
         self._uuid=self._uuid_obj.urn.replace('urn:uuid:', '')
