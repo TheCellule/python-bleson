@@ -8,6 +8,60 @@ import objc
 from Foundation import *
 from PyObjCTools import AppHelper
 import CoreBluetooth
+import ctypes
+
+
+# No experiments, no background thread.
+(USE_BACKGROUND_THREAD_EXPERIMENT, USE_DISPATCH_EXPERIMENT, USE_DISPATCH_EXPERIMENT_MAIN_QUEUE) = (False, False, False)
+
+
+# Background thread, no dispatch queue.  Donest crash, bu tnot CoreBluetooth messages
+#(USE_BACKGROUND_THREAD_EXPERIMENT, USE_DISPATCH_EXPERIMENT, USE_DISPATCH_EXPERIMENT_MAIN_QUEUE) = (True, False, False)
+
+
+# Background thread, thread local dispatch queue.  crash
+#(USE_BACKGROUND_THREAD_EXPERIMENT, USE_DISPATCH_EXPERIMENT, USE_DISPATCH_EXPERIMENT_MAIN_QUEUE) = (True, True, False)
+
+
+# Background thread, main dispatch queue.  crash
+#(USE_BACKGROUND_THREAD_EXPERIMENT, USE_DISPATCH_EXPERIMENT, USE_DISPATCH_EXPERIMENT_MAIN_QUEUE) = (True, True, True)
+
+
+######################################
+# Dispatch Queue experimetn begins
+
+# see: https://bitbucket.org/ronaldoussoren/pyobjc/issues/215/starting-runconsoleeventloop-from-a
+
+
+# Opaque structure use to pass areound 'dispatch_queue_t' C type
+# see: https://stackoverflow.com/questions/5030730/is-it-acceptable-to-subclass-c-void-p-in-ctypes
+class dispatch_queue_t(ctypes.Structure):
+    pass
+
+# Load the dispatch library
+_lib = ctypes.cdll.LoadLibrary("/usr/lib/system/libdispatch.dylib")
+
+_dispatch_queue_create = _lib.dispatch_queue_create
+_dispatch_queue_create.argtypes = [ctypes.c_char_p, ctypes.c_int32]  # 2nd param is stuct, but we don't use it.
+_dispatch_queue_create.restype = ctypes.POINTER(dispatch_queue_t)
+# https://developer.apple.com/documentation/dispatch/1453030-dispatch_queue_create
+
+
+# https://docs.python.org/3/library/ctypes.html#accessing-values-exported-from-dlls
+_dispatch_main_q = ctypes.POINTER(dispatch_queue_t).in_dll(_lib, '_dispatch_main_q')
+
+def dispatch_queue_create(name):
+    b_name = name.encode('utf-8')
+    c_name = ctypes.c_char_p(b_name)
+    return _dispatch_queue_create(c_name, ctypes.c_int32(0))
+
+def dispatch_get_main_queue():
+    return _dispatch_main_q
+
+# Dispatch Queue experimetn ends
+######################################
+
+
 
 # https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html
 
@@ -21,22 +75,10 @@ import CoreBluetooth
 # use XPC instead:  https://github.com/sandeepmistry/noble/blob/master/lib/mac/yosemite.js
 
 
-
 # Python XPC
 
-# brew install python3
-# brew install boost-python --with-python3
-# ln -s /usr/local/lib/libboost_python3.a /usr/local/lib/libboost_python-py34.a
-# git clone https://github.com/matthewelse/pyxpcconnection
-# cd pyxpcconnection
-# edit setup.py:
-"""
--        extra_compile_args=['-std=c++11'],
-+        extra_compile_args=['-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.9'],
-         libraries = boost_libs
-"""
-# python3 setup.py install
-
+# see: https://github.com/TheCellule/pyxpcconnection/tree/py3_fix
+# python3 setup.py install --user
 
 
 class CoreBluetoothAdapter(Adapter):
@@ -48,6 +90,7 @@ class CoreBluetoothAdapter(Adapter):
         self._socket_poll_thread = threading.Thread(target=self._runloop_thread, name='BlesonObjCRunLoop')
         self._socket_poll_thread.setDaemon(True)
         self._manager = None
+        self._dispatch_queue = None
 
     def open(self):
         pass
@@ -61,8 +104,13 @@ class CoreBluetoothAdapter(Adapter):
 
     def start_scanning(self):
         log.info("start scanning")
-        self._runloop_thread()
-        #self._socket_poll_thread.start()
+
+        if USE_BACKGROUND_THREAD_EXPERIMENT:
+            # spawn background thread
+            self._socket_poll_thread.start()
+        else:
+            # Start on main thread
+            self._runloop_thread()
 
 
     def stop_scanning(self):
@@ -83,8 +131,15 @@ class CoreBluetoothAdapter(Adapter):
         #                 bundle_path=objc.pathForFramework(
         #                     u'/System/Library/Frameworks/IOBluetooth.framework/Versions/A/Frameworks/CoreBluetooth.framework'))
 
+        if USE_DISPATCH_EXPERIMENT:
+            if USE_DISPATCH_EXPERIMENT_MAIN_QUEUE:
+                self._dispatch_queue = dispatch_get_main_queue()
+            else:
+                self._dispatch_queue = dispatch_queue_create('blesonq')
+
+        print(self._dispatch_queue)
         self._manager = CoreBluetooth.CBCentralManager.alloc()
-        self._manager.initWithDelegate_queue_options_(self, None, None)
+        self._manager.initWithDelegate_queue_options_(self, self._dispatch_queue, None)
 
     # https://pythonhosted.org/pyobjc/core/intro.html#working-with-threads
     def _runloop_thread(self):

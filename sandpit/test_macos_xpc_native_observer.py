@@ -28,6 +28,7 @@ class Connection(XpcConnection):
     def onEvent(self, data):
         print('onEvent, data={}'.format(data))
 
+
         msg_id = data['kCBMsgId']
         args = data['kCBMsgArgs']
 
@@ -39,18 +40,24 @@ class Connection(XpcConnection):
             print('discovered a device')
             args.setdefault(None)
 
-            rssi = args['kCBMsgArgRssi']
-            uuid = UUID(bytes=args['kCBMsgArgDeviceUUID'])
-            ad_data = args['kCBMsgArgAdvertisementData']
+            rssi = args['kCBMsgArgRssi'] if 'kCBMsgArgRssi' in args else None
+            ad_data = args['kCBMsgArgAdvertisementData'] if 'kCBMsgArgAdvertisementData' in args else None
 
-            print(rssi)
-            print(uuid)
-            print(ad_data)
+            if 'kCBMsgArgDeviceUUID' in args and args['kCBMsgArgDeviceUUID'] is not None:
+                uuid = UUID(bytes=args['kCBMsgArgDeviceUUID'])
+            else:
+                uuid = None
+
+            print("RSSI", rssi)
+            print("UUID", uuid)
+            print("ADV_DATA", ad_data)
 
     def onError(self, data):
-        print('error')
+        print('ERROR:', data)
 
     def handler(self, event):
+        print("handler")
+
         e_type, data = event
 
         if e_type == 'event':
@@ -58,6 +65,7 @@ class Connection(XpcConnection):
         elif e_type == 'error':
             self.onError(data)
         else:
+            print("WARNING: Unhandled message", event)
             # que?
             pass
 
