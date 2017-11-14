@@ -18,7 +18,8 @@ def get_provider():
             _provider = MacOSProvider()
 
         elif sys.platform.startswith('win32'):
-            raise NotImplementedError()
+            from bleson.providers.win32.win32_provider import Win32Provider
+            _provider = Win32Provider()
         else:
             raise RuntimeError('Platform {0} is not supported!'.format(sys.platform))
 
