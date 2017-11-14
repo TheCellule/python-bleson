@@ -22,6 +22,6 @@ def get_provider():
         else:
             raise RuntimeError('Platform {0} is not supported!'.format(sys.platform))
 
-    log.info("Provider is {}".format(_provider))
+    log.debug("Provider is {}".format(_provider))
 
     return _provider
