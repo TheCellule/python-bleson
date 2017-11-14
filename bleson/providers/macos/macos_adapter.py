@@ -68,8 +68,7 @@ class CoreBluetoothAdapter(Adapter):
 
 
     def stop_scanning(self):
-        rc = AppHelper.stopEventLoop()
-        log.info("done: AppHelper.stopEventLoop, successful?={}".format(rc))
+        AppHelper.stopEventLoop()
 
     def start_advertising(self, advertisement, scan_response=None):
         raise NotImplementedError
@@ -118,11 +117,7 @@ class CoreBluetoothAdapter(Adapter):
                 if 'kCBAdvDataServiceUUIDs' in data:
                     log.debug('kCBAdvDataServiceUUIDs:')
                     for cbuuid in data['kCBAdvDataServiceUUIDs']:
-                        uuid_bytes2 = cbuuid.data().bytes()
                         uuid_bytes = cbuuid.data().bytes().tobytes()
-                        log.debug("--------------")
-                        log.debug(bytearray_to_hexstring(uuid_bytes))
-                        log.debug(bytearray_to_hexstring(uuid_bytes2))
 
                         if 2 == len(uuid_bytes):
                             uuid = UUID16(uuid_bytes, little_endian=False)
