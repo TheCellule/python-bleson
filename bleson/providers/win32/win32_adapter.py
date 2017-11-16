@@ -5,12 +5,7 @@ from bleson.core.hci.constants import *
 from bleson.logger import log
 from bleson.core.hci.type_converters import bytearray_to_hexstring
 
-#Minimum version for BLE scanning without paring and GATT Peripheral :  https://docs.microsoft.com/en-gb/windows/uwp/whats-new/windows-10-build-15063
-
-
-#https://docs.microsoft.com/en-gb/uwp/api/windows.devices.bluetooth.genericattributeprofile.gattserviceprovider
-#https://docs.microsoft.com/en-gb/uwp/api/windows.devices.bluetooth.bluetoothledevice
-
+import blesonwin
 
 class BluetoothAdapter(Adapter):
 
@@ -18,6 +13,8 @@ class BluetoothAdapter(Adapter):
         self.device_id = device_id
         self.connected = False
         self._keep_running = True
+        self.on_advertising_data = None
+        blesonwin.initialise()
 
 
     def open(self):
@@ -32,9 +29,17 @@ class BluetoothAdapter(Adapter):
 
     def start_scanning(self):
         log.info("start scanning")
+        if self.on_advertising_data:
+            blesonwin.on_advertisement(self._on_advertising_data)
+        else:
+            log.warning("on_advertising_data is not set")
+
+        log.info(self.on_advertising_data)
+        blesonwin.start_observer()
 
     def stop_scanning(self):
         log.info("stopping")
+        blesonwin.stop_observer()
 
     def start_advertising(self, advertisement, scan_response=None):
         raise NotImplementedError
@@ -42,3 +47,22 @@ class BluetoothAdapter(Adapter):
     def stop_advertising(self):
         raise NotImplementedError
 
+    def _on_advertising_data(self, data):
+        try:
+            log.debug('Found: {}'.format(data))
+
+            if self.on_advertising_data:
+                advertisement = Advertisement()
+                advertisement.flags = 0
+                advertisement.rssi = data['RSSI']
+
+                if 'LOCALNAME' in data:
+                    advertisement.name = int(data['LOCALNAME'])
+
+                if 'TXPOWER' in data:
+                    advertisement.tx_pwr_lvl = int(data['TXPOWER'])
+
+                self.on_advertising_data(advertisement)
+
+        except Exception as e:
+            log.exception(e)

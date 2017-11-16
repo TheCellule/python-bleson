@@ -2,7 +2,6 @@ from bleson.interfaces.provider import Provider
 from .win32_adapter import BluetoothAdapter
 from bleson.logger import log
 
-
 class Win32Provider(Provider):
 
     def get_adapter(self, adapter_id=0):
