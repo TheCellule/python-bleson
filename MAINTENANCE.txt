@@ -13,7 +13,7 @@ pip3 install --upgrade pip setuptools wheel twine
 
 
 rm -fr dist build
-python3 setup.py sdist
+python setup.py sdist bdist_wheel
 twine upload dist/*
 
 
