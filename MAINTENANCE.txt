@@ -25,8 +25,14 @@ Touch test install
 MAC:
 
 rm -fr dist build
-pip3 uninstall pyobjc
+pip3 uninstall -y pyobjc pyobjc-core PyObjCTools
 python3 setup.py install
 
 python3 -m bleson --observer
 
+Win
+
+cd C:\Users\Wayne\PycharmProjects\python-bleson
+pip uninstall -y  bleson blesonwin
+python setup.py install
+python -m bleson --observer

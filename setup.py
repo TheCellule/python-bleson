@@ -7,10 +7,10 @@ system = platform.system()
 print("Running on",system)
 
 if system == 'Windows':
-    # Wheels is not yet supported by setuptools, meh.
+    # Wheels are not yet supported by setuptools.
     #install_requires.append('blesonwin')
     import pip
-    pip.main('install',['blesonwin'])
+    pip.main(['install', 'blesonwin'])
 elif system == 'Darwin':
     install_requires.append('pyobjc')
 
@@ -18,7 +18,7 @@ elif system == 'Darwin':
 
 setup(
     name='bleson',
-    version='0.0.4',
+    version='0.0.5',
     packages= find_packages(),
     install_requires=install_requires,
     url='https://github.com/TheCellule/python-bleson',
