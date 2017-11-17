@@ -1,6 +1,18 @@
 python-bleson
 =============
 
+.. image:: https://img.shields.io/codecov/c/github/TheCellule/python-bleson/master.svg?maxAge=2592000
+    :target: https://codecov.io/github/TheCellule/python-bleson
+    :alt: Code Coverage
+
+.. image:: https://img.shields.io/pypi/v/bluezero.svg
+   :target: https://pypi.python.org/pypi/bleson/
+   :alt: PyPI Version
+
+.. image:: https://img.shields.io/pypi/l/bluezero.svg
+   :target: https://github.com/TheCellule/python-bleson/blob/master/LICENSE
+   :alt: MIT License
+
 Bleson is a cross platform Python 3 module for using Bluetooth LE.
 
 The supported Bluetooth LE roles are: Observer, Advertiser (inc. Beacon), Peripheral* and Central*.
