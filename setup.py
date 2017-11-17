@@ -7,7 +7,10 @@ system = platform.system()
 print("Running on",system)
 
 if system == 'Windows':
-    install_requires.append('blesonwin')
+    # Wheels is not yet supported by setuptools, meh.
+    #install_requires.append('blesonwin')
+    import pip
+    pip.main('install',['blesonwin'])
 elif system == 'Darwin':
     install_requires.append('pyobjc')
 
