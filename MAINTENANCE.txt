@@ -1,0 +1,10 @@
+PyPi upload
+
+Ensure the latest tool are installed:
+
+pip3 install --upgrade pip setuptools wheel twine
+
+
+rm -fr dist build
+python setup.py sdist
+twine upload dist/*

@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='bleson',
-    version='0.0.2',
+    version='0.0.3',
     packages= find_packages(),
     url='https://github.com/TheCellule/python-bleson',
     license='MIT',

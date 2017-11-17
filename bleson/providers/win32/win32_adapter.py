@@ -57,7 +57,7 @@ class BluetoothAdapter(Adapter):
                 advertisement.rssi = data['RSSI']
 
                 if 'LOCALNAME' in data:
-                    advertisement.name = int(data['LOCALNAME'])
+                    advertisement.name = data['LOCALNAME']
 
                 if 'TXPOWER' in data:
                     advertisement.tx_pwr_lvl = int(data['TXPOWER'])
