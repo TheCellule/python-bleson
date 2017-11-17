@@ -57,7 +57,7 @@ Quick Test
 
 For the impatient, try this:
 
-.. code:: python
+.. code::
 
     pip3 install bleson
     python3 -m bleson --observer
@@ -76,7 +76,7 @@ You may need to run 'pip3' with sudo on your platform.
 
 As Python package management seems to be going thru a bit of a change probably a good idea to update :
 
-.. code:: bash
+.. code::
 
     pip3 install --upgrade pip setuptools wheel twine
 
