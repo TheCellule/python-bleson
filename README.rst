@@ -1,25 +1,29 @@
-=============
 python-bleson
 =============
 
 Bleson is a cross platform Python 3 module for using Bluetooth LE.
 
-Supported Bluetooth LE roles are: Observer, Advertiser, Peripheral and Central.
+The supported Bluetooth LE roles are: Observer, Advertiser (inc. Beacon), Peripheral* and Central*.
 
-The supported platforms are Linux, macOS and Windows 10.
+The supported platforms are: Linux, macOS and Windows 10.
 
-A compiler is not needed to install Bleson and for each platform only the standard built-in OS API's are used.
+Other highlights:
+
+- The same Bleson API is used across all supported platforms.
+- Only the standard built-in OS provided Bluetooth LE API's are used on each platform.
+- Bleson does not impose a 'mainloop' on user scripts on any platform.
+- A compiler is not needed to install Bleson or for updating any system components.
 
 Status
 ======
 
-Currently an Alpha release, all areas are WIP and subject to change.
+Currently in an early Alpha stage.
 
-Only the Observing and Scanning roles are currently implemented, not necessarily fully on each platform, in summary:
+Only the Observing and Scanning roles are currently implemented amnd not necessarily fully on each platform, in summary:
 
 Linux:      Observing and Advertising works, it is the most functional of all 3 platforms.
 
-Mac:        Observing and Advertising works, but the actual published Advertisement data is managed by the OS.
+Mac:        Observing and Advertising works, but the actual published Advertisement data is ultimately decided by the OS.
 
 Windows:    Observing works but starting Advertising will result in a crash.
 
@@ -30,7 +34,8 @@ Feedback
 All feedback is welcomed and greatly appreciated, please feel free to:
 
 - Post a suggestion or question on the Bleson GoogleGroup_
-- Raise a GitHub Issue_.
+- Raise a GitHub Issue_
+- Submit a PR!
 
 Thanks!
 
@@ -40,10 +45,10 @@ Quick Test
 
 For the impatient, try this:
 
-```python
-pip3 install bleson
-python3 -m bleson --observer
-```
+.. code:: python
+
+    pip3 install bleson
+    python3 -m bleson --observer
 
 You may need to run 'pip3' with sudo on your platform,
 You may need to run 'python' for python3 on your platform. (Windows)
@@ -51,11 +56,19 @@ You may need to run 'python' for python3 on your platform. (Windows)
 Install
 =======
 
-```python
-pip3 install bleson
-```
+.. code:: bash
+
+    pip3 install bleson
 
 You may need to run 'pip3' with sudo on your platform.
+
+As Python package management seems to be going thru a bit of a change probably a good idea to update :
+
+.. code:: bash
+
+    pip3 install --upgrade pip setuptools wheel twine
+
+
 
 Running - Linux
 ===============
@@ -65,9 +78,10 @@ User Python scripts will need to run as root, see the 'Rootless Linux' section b
 It's currently not necessary to stop the bluetoothd service for observing, but because Bleson uses the HCI socket interface directly, it is recommended.
 
 For example, to do on a Raspberry Pi:
-```bash
-sudo service bluetooth stop
-```
+
+.. code:: bash
+
+    sudo service bluetooth stop
 
 Running - macOS
 ===============
@@ -89,25 +103,26 @@ Touch test
 
 To check the library is functioning ok run the following to find nearby Bluetooth LE devices :
 
-```python
-python3 -m bleson --observer
-```
+.. code:: python
+
+    python3 -m bleson --observer
 
 You should see lines of the form:
 
-```bash
-Advertisement(flags=0x06, name=b'BBC micro:bit [tegip]', rssi=-86)
-```
+.. code:: python
 
-You may also see other debug output and warnings.
+    Advertisement(flags=0x06, name=b'BBC micro:bit [tegip]', rssi=-86)
+
+
+You may also see other debug output and warnings during this Alpha stage of development.
 
 
 Examples
 ========
 
 Please see examples_ for more details.
-Examples prefixed with 'basic_' shows basic Bleson API usage.
-Examples prefixed with 'context_' shows Blesons context maanger ('with' keyword) API usage.
+Examples prefixed with 'basic' shows basic Bleson API usage.
+Examples prefixed with 'context' shows Blesons context maanger ('with' keyword) API usage.
 
 
 Example - Advertiser
@@ -141,17 +156,19 @@ To run without using root you can use the `setcap` utility to give the Python3 b
 
 Raspberry Pi Jessie
 
-```bash
-sudo setcap cap_net_raw+eip $(eval readlink -f `which python3`)
-```
+.. code:: bash
+
+    sudo setcap cap_net_raw+eip $(eval readlink -f `which python3`)
 
 Raspberry Pi Stretch
 
-```bash
-sudo setcap cap_net_raw,cap_net_admin+eip $(eval readlink -f `which python3`)
-```
+.. code:: bash
 
-.. _Python: http://www.python.org/
-.. _Issues: https://github.com/TheCellule/python-bleson/issues
-.. _Install: https://pythonhosted.org/pyobjc/install.html
-.. _GoogleGroup: https://groups.google.com/group/python-bleson
+    sudo setcap cap_net_raw,cap_net_admin+eip $(eval readlink -f `which python3`)
+
+
+.. _Python: https://www.python.org/downloads/
+.. _Issue: https://github.com/TheCellule/python-bleson/issues/
+.. _GoogleGroup: https://groups.google.com/group/python-bleson/
+.. _examples: https://github.com/TheCellule/python-bleson/tree/master/examples/
+.. _tests: https://github.com/TheCellule/python-bleson/tree/master/tests/
