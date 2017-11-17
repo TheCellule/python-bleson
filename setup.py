@@ -12,7 +12,10 @@ if system == 'Windows':
     import pip
     pip.main(['install', 'blesonwin'])
 elif system == 'Darwin':
-    install_requires.append('pyobjc')
+    # Wheels are not yet supported by setuptools.
+    # install_requires.append('pyobjc')
+    import pip
+    pip.main(['install', 'pyobjc'])
 
 
 

@@ -4,17 +4,18 @@ python-bleson
 
 Bleson is a cross platform Python 3 module for using Bluetooth LE.
 
-Platforms supported are : Linux, macOS & Windows 10.
-
 Supported Bluetooth LE roles are: Observer, Advertiser, Peripheral and Central.
 
+The supported platforms are Linux, macOS and Windows 10.
+
+A compiler is not needed to install Bleson and for each platform only the standard built-in OS API's are used.
 
 Status
 ======
 
 Currently an Alpha release, all areas are WIP and subject to change.
 
-Only Observing and Scanning API's are currently implemented, not necessarily fully on each platform.
+Only the Observing and Scanning roles are currently implemented, not necessarily fully on each platform, in summary:
 
 Linux:      Observing and Advertising works, it is the most functional of all 3 platforms.
 
@@ -26,7 +27,7 @@ Windows:    Observing works but starting Advertising will result in a crash.
 Feedback
 ========
 
-Any and all feedback is greatly appreciated, please feel free to:
+All feedback is welcomed and greatly appreciated, please feel free to:
 
 - Post a suggestion or question on the Bleson GoogleGroup_
 - Raise a GitHub Issue_.
@@ -34,46 +35,53 @@ Any and all feedback is greatly appreciated, please feel free to:
 Thanks!
 
 
+Quick Test
+==========
+
+For the impatient, try this:
+
+```python
+pip3 install bleson
+python3 -m bleson --observer
+```
+
+You may need to run 'pip3' with sudo on your platform,
+You may need to run 'python' for python3 on your platform. (Windows)
+
 Install
 =======
 
-On every platform run:
 ```python
 pip3 install bleson
 ```
 
-You may need to run the command as sudo on your platform.
+You may need to run 'pip3' with sudo on your platform.
 
-Linux
------
-
-On Linux Bleson uses the HCI Socket interface; the only system BLE dependency is the BlueZ kernel driver, the userland Bluez bluetoothd service can (and for some roles should) be stopped, e.g. there is no need to recompile Bluez from source.
+Running - Linux
+===============
 
 User Python scripts will need to run as root, see the 'Rootless Linux' section below to remove this constraint.
 
-It's currently not necessary to stop the bluetoothd service for observing, but it is recommended.
+It's currently not necessary to stop the bluetoothd service for observing, but because Bleson uses the HCI socket interface directly, it is recommended.
 
-e.g. on a Raspberry Pi:
+For example, to do on a Raspberry Pi:
 ```bash
 sudo service bluetooth stop
 ```
 
-Mac
----
+Running - macOS
+===============
 
-On Mac the PyObjC module is required, the macOS bundled Python is only version 2, you will need Python 3 and PyObjC.
-
-To install PyObj refer to its Install_ page.
+On Mac the system bundled Python is version 2, you will need Python 3 from Python_.
 
 
-Windows
--------
+Running - Windows
+=================
 
 You need to be running at least Windows 10 Fall Creators Update (build 16299, 64bit)
 
 The 'blesonwin' binary package has only been built and tested with Python 3.6.32.
 
-On Windows there is a additional module automatically installed, called 'blesonwin', which provides a native Python module to access the WinRT BLE API's, it's not recommended to use this module directly.
 
 
 Touch test
@@ -94,37 +102,10 @@ Advertisement(flags=0x06, name=b'BBC micro:bit [tegip]', rssi=-86)
 You may also see other debug output and warnings.
 
 
-Public API
-==========
-
-Outline of the 'bleson' Python packages an end-user would use to play with Bluetooth LE.
-
-.. code:: python
-
-    bleson
-        get_provider()          # Obtain the Bluetooth LE provider for the current platform (Linux/macOS/Windows)
-
-    bleson.core.types           # Value objects representing Bluetooth Core Spec data types
-        BDAddress
-        Device
-        Advertisement
-
-    bleson.core.roles           # Core Bluetooth roles
-        Advertiser
-        Observer
-
-    bleson.beacons.eddystone
-        EddystoneBeacon         # Physical Web beacon, is a subclass of Advertiser role
-
-    bleson.logger
-        log                     # Simple convenience wrapper around Python's standard logging.
-
-
-
 Examples
 ========
 
-Please see [examples](examples) for more details.
+Please see examples_ for more details.
 Examples prefixed with 'basic_' shows basic Bleson API usage.
 Examples prefixed with 'context_' shows Blesons context maanger ('with' keyword) API usage.
 
@@ -148,7 +129,8 @@ Shows how to scan for local devices.
 Tests
 =====
 
-Please see the [tests](tests) folder.
+Please see the tests_ folder.
+
 
 
 
