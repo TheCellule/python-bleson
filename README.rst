@@ -115,7 +115,7 @@ Touch test
 
 To check the library is functioning ok run the following to find nearby Bluetooth LE devices :
 
-.. code:: python
+.. code:: bash
 
     python3 -m bleson --observer
 
