@@ -13,5 +13,20 @@ pip3 install --upgrade pip setuptools wheel twine
 
 
 rm -fr dist build
-python setup.py sdist
+python3 setup.py sdist
 twine upload dist/*
+
+
+
+
+Touch test install
+
+
+MAC:
+
+rm -fr dist build
+pip3 uninstall pyobjc
+python3 setup.py install
+
+python3 -m bleson --observer
+

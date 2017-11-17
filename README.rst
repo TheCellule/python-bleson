@@ -8,9 +8,6 @@ Platforms supported are : Linux, macOS & Windows 10.
 
 Supported Bluetooth LE roles are: Observer, Advertiser, Peripheral and Central.
 
-Bleson is intended to have minimal dependencies and can be installed using just 'pip' on all platforms.
-
-
 
 Status
 ======
@@ -31,8 +28,8 @@ Feedback
 
 Any and all feedback is greatly appreciated, please feel free to:
 
-- Post a suggestion or question on the [Bleson Google Group](https://groups.google.com/group/python-bleson).
-- Raise a [GitHub issue](https://github.com/TheCellule/python-bleson/issues).
+- Post a suggestion or question on the Bleson GoogleGroup_
+- Raise a GitHub Issue_.
 
 Thanks!
 
@@ -40,16 +37,19 @@ Thanks!
 Install
 =======
 
+On every platform run:
+```python
+pip3 install bleson
+```
+
+You may need to run the command as sudo on your platform.
+
 Linux
 -----
 
 On Linux Bleson uses the HCI Socket interface; the only system BLE dependency is the BlueZ kernel driver, the userland Bluez bluetoothd service can (and for some roles should) be stopped, e.g. there is no need to recompile Bluez from source.
 
 User Python scripts will need to run as root, see the 'Rootless Linux' section below to remove this constraint.
-
-```python
-sudo pip3 install bleson
-```
 
 It's currently not necessary to stop the bluetoothd service for observing, but it is recommended.
 
@@ -63,11 +63,7 @@ Mac
 
 On Mac the PyObjC module is required, the macOS bundled Python is only version 2, you will need Python 3 and PyObjC.
 
-Assuming you have installed Python3 using Homebrew (which doesn't require sudo to update) run:
-
-```python
-pip3 install bleson pyobjc
-```
+To install PyObj refer to its Install_ page.
 
 
 Windows
@@ -75,13 +71,9 @@ Windows
 
 You need to be running at least Windows 10 Fall Creators Update (build 16299, 64bit)
 
-On Windows there is a additional module called 'blesonwin' which provides a native Python module to access the WinRT BLE API's.
-
 The 'blesonwin' binary package has only been built and tested with Python 3.6.32.
 
-```python
-pip install bleson blesonwin
-```
+On Windows there is a additional module automatically installed, called 'blesonwin', which provides a native Python module to access the WinRT BLE API's, it's not recommended to use this module directly.
 
 
 Touch test
@@ -177,3 +169,7 @@ Raspberry Pi Stretch
 sudo setcap cap_net_raw,cap_net_admin+eip $(eval readlink -f `which python3`)
 ```
 
+.. _Python: http://www.python.org/
+.. _Issues: https://github.com/TheCellule/python-bleson/issues
+.. _Install: https://pythonhosted.org/pyobjc/install.html
+.. _GoogleGroup: https://groups.google.com/group/python-bleson
