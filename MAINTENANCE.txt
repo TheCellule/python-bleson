@@ -12,31 +12,46 @@ Ensure the latest tool are installed:
 pip3 install --upgrade pip setuptools wheel twine
 
 
+PyPi test upload and pip install
+
+# https://packaging.python.org/guides/using-testpypi/#using-test-pypi
+
+
+# Build dist
+rm -fr dist build
+python3 setup.py sdist
+twine upload --repository pypitest dist/*
+
+# Test PyPiTest dist
+rm -fr env/test
+virtualenv --no-site-packages env/test
+cd env/test/bin
+source activate
+pip3 install --upgrade pip setuptools wheel
+pip3 install --index-url https://test.pypi.org/simple/  bleson
+python3 -m bleson --observer
+deactivate
+cd -
+
+
+
+
+# Test PyPi dist
+rm -fr env/prod
+virtualenv --no-site-packages env/prod
+cd env/test/bin
+source activate
+pip3 install --upgrade pip setuptools wheel
+pip3 install bleson
+python3 -m bleson --observer
+deactivate
+cd -
+
+
+
+# RELEASE:
+
+
 rm -fr dist build
 python3 setup.py sdist
 twine upload dist/*
-
-
-
-
-Touch test install
-
-
-MAC:
-
-rm -fr dist build
-pip3 uninstall -y pyobjc
-pip3 uninstall -y pyobjc-core
-pip3 uninstall -y PyObjCTools
-
-python3 setup.py install
-python3 -m bleson --observer
-
-Win
-
-cd C:\Users\Wayne\PycharmProjects\python-bleson
-pip uninstall -y  bleson
-pip uninstall -y  blesonwin
-
-python setup.py install
-python -m bleson --observer
