@@ -58,10 +58,10 @@ class CoreBluetoothAdapter(Adapter):
 
 
     def on(self):
-        log.warn("TODO: adatper on")
+        log.debug("TODO: adatper on")
 
     def off(self):
-        log.warn("TODO: adatper off")
+        log.debug("TODO: adatper off")
 
     def start_scanning(self):
         self._socket_poll_thread.start()
