@@ -9,7 +9,7 @@ PyPi upload
 
 Ensure the latest tool are installed:
 
-pip3 install --upgrade pip setuptools wheel twine
+pip3 install --upgrade pip setuptools wheel twine tox
 
 
 PyPi test upload and pip install
