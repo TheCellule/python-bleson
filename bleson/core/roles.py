@@ -7,7 +7,7 @@ class Observer(Role):
 
     def __init__(self, adapter : Adapter, on_advertising_data=None):
         self.adapter = adapter
-        self.on_advertising_data = on_advertising_data
+        self.adapter.on_advertising_data = on_advertising_data
 
     def start(self):
         self.adapter.start_scanning()

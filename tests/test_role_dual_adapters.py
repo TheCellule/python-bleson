@@ -12,7 +12,7 @@ from bleson.core.roles import Observer, Advertiser
 from bleson.beacons.eddystone import EddystoneBeacon
 from bleson.logger import log, set_level, DEBUG, INFO
 
-
+import sys
 TEST_DURATION_SECS = 5
 
 
@@ -20,6 +20,9 @@ class TestDualAdapters(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        if not sys.platform.lower().startswith('linux'):
+            raise unittest.SkipTest("Dual adapter tests only run on Linux")
+
         provider = get_provider()
         cls.adapter0 = provider.get_adapter(0)  # Used for the Observer role
         cls.adapter1 = provider.get_adapter(1)  # Used for the Advertiser role

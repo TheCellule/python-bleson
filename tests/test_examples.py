@@ -31,5 +31,10 @@ class TestExamples(unittest.TestCase):
         for script in self.scripts:
             log.info("Running {}".format(script))
             sys.argv = ['', str(TEST_DURATION)]
-            runpy.run_path(script)
+
+            if sys.platform.lower().startswith('darwin'):
+                log.warning("Remove workaround for macOS native teardown issue")
+                os.system("python3 {} {}".format(script, TEST_DURATION))
+            else:
+                runpy.run_path(script)
 

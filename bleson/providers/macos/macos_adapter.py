@@ -10,6 +10,8 @@ from PyObjCTools import AppHelper
 import CoreBluetooth
 import ctypes
 
+from threading import Event
+
 
 ######################################
 # Dispatch Queue support
@@ -43,19 +45,29 @@ def dispatch_queue_create(name):
 
 class CoreBluetoothAdapter(Adapter):
 
+    # states
+    poweredOn = 5
+
     def __init__(self, device_id=0):
         self.device_id = device_id
+        self.on_advertising_data = None
         self.connected = False
         self._keep_running = True
         self._socket_poll_thread = threading.Thread(target=self._runloop_thread, name='BlesonObjCRunLoop')
         self._socket_poll_thread.setDaemon(True)
         self._dispatch_queue = dispatch_queue_create('blesonq')
-        self._manager = CoreBluetooth.CBCentralManager.alloc()
+        self._manager = None
+        self._peripheral_manager = None
+        self._runloop_started_lock = Event()
+
+
+    def __del__(self):
+        log.info("Stopping event loop")
+        AppHelper.stopEventLoop()
 
 
     def open(self):
-        pass
-
+        self._socket_poll_thread.start()
 
     def on(self):
         log.debug("TODO: adatper on")
@@ -63,18 +75,44 @@ class CoreBluetoothAdapter(Adapter):
     def off(self):
         log.debug("TODO: adatper off")
 
-    def start_scanning(self):
-        self._socket_poll_thread.start()
+    def wait_for_event_timeout(self, e, t):
+        while not e.isSet():
+            log.debug('wait_for_event_timeout starting')
+            event_is_set = e.wait(t)
+            log.debug('event set: %s', event_is_set)
 
+
+    def start_scanning(self):
+        self.wait_for_event_timeout(self._runloop_started_lock, 1)
+        self._manager.scanForPeripheralsWithServices_options_(None, None)
 
     def stop_scanning(self):
-        AppHelper.stopEventLoop()
+        log.debug("")
+        self._manager.stopScan()
+
 
     def start_advertising(self, advertisement, scan_response=None):
-        raise NotImplementedError
+        log.warning("TODO")
+        return
+        adv_data = {
+            'CBAdvertisementDataLocalNameKey': 'bleson',
+            #'CBAdvertisementDataServiceUUIDsKey': CBUUID.UUIDWithString_(u'6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
+            'CBAdvertisementDataServiceUUIDsKey': CBUUID.UUIDWithString_(u'0xFFEF')
+        }
+        self._peripheral_manager.startAdvertising_(adv_data)
 
     def stop_advertising(self):
-        raise NotImplementedError
+        log.warning("TODO")
+        return
+        adv_data = {
+            'CBAdvertisementDataLocalNameKey': 'bleson',
+            #'CBAdvertisementDataServiceUUIDsKey': CBUUID.UUIDWithString_(u'6E400001-B5A3-F393-E0A9-E50E24DCCA9E')
+            'CBAdvertisementDataServiceUUIDsKey': CBUUID.UUIDWithString_(u'0xFFEF')
+        }
+        if self._peripheral_manager.isAdvertising:
+            self._peripheral_manager.stopAdvertising()
+
+
 
 
     # https://pythonhosted.org/pyobjc/core/intro.html#working-with-threads
@@ -82,20 +120,35 @@ class CoreBluetoothAdapter(Adapter):
         try:
             with objc.autorelease_pool():
                 queue_ptr = objc.objc_object(c_void_p=self._dispatch_queue)
+
+                self._manager = CoreBluetooth.CBCentralManager.alloc()
                 self._manager.initWithDelegate_queue_options_(self, queue_ptr, None)
+
+                #self._peripheral_manager = CoreBluetooth.CBPeripheralManager.alloc()
+                #self._peripheral_manager.initWithDelegate_queue_options_(self, queue_ptr, None)
+                self._runloop_started_lock.set()
                 AppHelper.runConsoleEventLoop(installInterrupt=True)
         except Exception as e:
             log.exception(e)
-        finally:
-            AppHelper.stopEventLoop()
+        log.info("Exiting runloop")
 
-    # CoreBluetooth Protocol
+
+    # CoreBluetooth PeripheralManager Protocol
+
+    def peripheralManagerDidUpdateState_(self, manager):
+        state = manager.state()
+        log.debug("State: {}".format(state))
+
+    def peripheralManagerDidStartAdvertising_error_(self, peripheral, error):
+        print("peripheralManagerDidStartAdvertising_error_ {} {}".format(peripheral, error))
+
+
+    # CoreBluetooth CentralManager Protocol
 
     def centralManagerDidUpdateState_(self, manager):
-        log.debug("centralManagerDidUpdateState_")
+        state = manager.state()
+        log.debug("State: {}".format(state))
 
-        if self.connected == False:
-            self._manager.scanForPeripheralsWithServices_options_(None, None)
 
     def centralManager_didDiscoverPeripheral_advertisementData_RSSI_(self, manager, peripheral, data, rssi):
         try:
@@ -155,7 +208,7 @@ class CoreBluetoothAdapter(Adapter):
     def centralManager_didDisconnectPeripheral_error_(self, manager, peripheral, error):
         log.debug("centralManager_didDisconnectPeripheral_error_")
         self.connected = False
-        AppHelper.stopEventLoop()
+        #AppHelper.stopEventLoop()
 
     def peripheral_didDiscoverServices_(self, peripheral, error):
         log.debug("peripheral_didDiscoverServices_")
