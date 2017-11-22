@@ -18,6 +18,10 @@ if sys.argv[-1] == 'publish':
 
 
 def test_suite():
+    # print native diagnostic information on an abort (e.g. for faultfinding blesonwin native errors)
+    # alternatively add to python parameters:  -X faulthandler
+    #import faulthandler
+    #faulthandler.enable()
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('tests')
     return test_suite
