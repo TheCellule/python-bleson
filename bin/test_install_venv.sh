@@ -5,21 +5,28 @@
 # Run in bash (Mac/Linux) or Git Shell (Windows)
 _PY=python3
 _PIP=pip3
-_ENVNAME=prod
-_BIN=env/$_ENVNAME/bin
+_ENV_NAME=prod
+_ENV_DIR=env/$_ENV_NAME
+_ENV_BIN=$_ENV_DIR/bin
+#_VENV_PY_ARG=--python=$_PY
+_SUDO="sudo -E"
 
 if [ "$WINDIR" ]; then
     echo Windows
     _PY=python
-    _BIN=env/$_ENVNAME/Scripts
+    _PIP=pip
+    _ENV_BIN=$_ENV_DIR/Scripts
+    _SUDO=
 fi
 
-rm -fr env/$_ENVNAME
-mkdir env 2> /dev/nul
-virtualenv --no-site-packages env/$_ENVNAME
-cd $_BIN
-source activate
-#$_PIP install --upgrade pip setuptools wheel
+rm -fr $_ENV_DIR
+mkdir env 2> /dev/null
+
+$_PY -m venv $_ENV_DIR --without-pip
+source $_ENV_BIN/activate
+
+$_PIP install --upgrade pip setuptools wheel
 $_PIP install --no-cache-dir bleson
-$_PY -m bleson --observer
+$_SUDO $_PY -m bleson --observer
 deactivate
+

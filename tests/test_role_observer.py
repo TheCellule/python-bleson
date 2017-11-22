@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
+import sys
 from time import sleep
 
 
@@ -11,8 +12,11 @@ from bleson.logger import log, set_level, DEBUG
 
 SCANTIME = 5          # seconds
 
-MICROBIT1_BDADDR=BDAddress('f5:3a:c9:b0:15:f6')
-
+# TODO: get from env config
+BLE_DEVICE_BDADDR=BDAddress('F4:58:8E:30:7B:43')        # Puck.js
+#BLE_DEVICE_LOCALNAME='Puck.js 7b43'
+#BLE_DEVICE_LOCALNAME='Bluefruit52'
+BLE_DEVICE_LOCALNAME='Apple TV'
 
 class TestRoles(unittest.TestCase):
 
@@ -33,7 +37,10 @@ class TestRoles(unittest.TestCase):
         observer = Observer(self.adapter)
 
         def advertisement_update(advertisement):
-            found_devices.add(advertisement.address)
+            if sys.platform.lower().startswith('darwin'):
+                found_devices.add(advertisement.name)
+            else:
+                found_devices.add(advertisement.address)
 
         observer.on_advertising_data = advertisement_update
 
@@ -45,5 +52,8 @@ class TestRoles(unittest.TestCase):
 
         log.info("Found: {}".format(found_devices))
 
-        self.assertTrue(MICROBIT1_BDADDR in found_devices)
+        if sys.platform.lower().startswith('darwin'):
+            self.assertTrue(BLE_DEVICE_LOCALNAME in found_devices)
+        else:
+            self.assertTrue(BLE_DEVICE_BDADDR in found_devices)
 

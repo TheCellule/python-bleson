@@ -1,10 +1,7 @@
 import threading
 from bleson.interfaces.adapter import Adapter
 from bleson.core.types import Advertisement, UUID16, UUID128
-from bleson.core.hci.constants import *
 from bleson.logger import log
-from bleson.core.hci.type_converters import bytearray_to_hexstring
-import objc
 from Foundation import *
 from PyObjCTools import AppHelper
 import CoreBluetooth
@@ -43,7 +40,17 @@ def dispatch_queue_create(name):
     return _dispatch_queue_create(c_name, NULL_PTR)
 
 
-class CoreBluetoothAdapter(Adapter):
+# The adapter is a singleton because of the (singleton) nature of the underlying native NSApp runtime.
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+
+class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
 
     # states
     poweredOn = 5
@@ -59,15 +66,13 @@ class CoreBluetoothAdapter(Adapter):
         self._manager = None
         self._peripheral_manager = None
         self._runloop_started_lock = Event()
-
-
-    def __del__(self):
-        log.info("Stopping event loop")
-        AppHelper.stopEventLoop()
-
+        self._started = False
 
     def open(self):
-        self._socket_poll_thread.start()
+        if not self._started:
+            self._started = True
+            self._socket_poll_thread.start()
+            self.wait_for_event_timeout(self._runloop_started_lock)
 
     def on(self):
         log.debug("TODO: adatper on")
@@ -75,7 +80,7 @@ class CoreBluetoothAdapter(Adapter):
     def off(self):
         log.debug("TODO: adatper off")
 
-    def wait_for_event_timeout(self, e, t):
+    def wait_for_event_timeout(self, e, t=5):
         while not e.isSet():
             log.debug('wait_for_event_timeout starting')
             event_is_set = e.wait(t)
@@ -83,7 +88,7 @@ class CoreBluetoothAdapter(Adapter):
 
 
     def start_scanning(self):
-        self.wait_for_event_timeout(self._runloop_started_lock, 1)
+        self.wait_for_event_timeout(self._runloop_started_lock)
         self._manager.scanForPeripheralsWithServices_options_(None, None)
 
     def stop_scanning(self):

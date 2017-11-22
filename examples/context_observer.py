@@ -5,7 +5,7 @@ from time import sleep
 from bleson import get_provider, Observer
 from bleson.logger import log, set_level, DEBUG
 
-set_level(DEBUG)
+#set_level(DEBUG)
 
 
 # Get the wait time from the first script argument or default it to 10 seconds

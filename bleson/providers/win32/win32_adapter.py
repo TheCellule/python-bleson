@@ -1,6 +1,6 @@
 import threading
 from bleson.interfaces.adapter import Adapter
-from bleson.core.types import Advertisement, UUID16, UUID128
+from bleson.core.types import Advertisement, UUID16, UUID128, BDAddress
 from bleson.core.hci.constants import *
 from bleson.logger import log
 from bleson.core.hci.type_converters import bytearray_to_hexstring
@@ -56,6 +56,9 @@ class BluetoothAdapter(Adapter):
                 advertisement = Advertisement()
                 advertisement.flags = 0
                 advertisement.rssi = data['RSSI']
+
+                if 'ADDRESS' in data:
+                    advertisement.address = BDAddress(data['ADDRESS'])
 
                 if 'LOCALNAME' in data:
                     advertisement.name = data['LOCALNAME']
