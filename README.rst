@@ -65,6 +65,8 @@ For the impatient, try this:
 You may need to run 'pip3' with sudo on your platform,
 You may need to run 'python' for python3 on your platform. (Windows)
 
+*Important: You must use pip v9.0 or newer to be able to install bleson's precompiled native components ('wheels') on Mac and Windows.*
+
 Install
 =======
 
