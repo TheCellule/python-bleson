@@ -42,10 +42,11 @@ class BluetoothAdapter(Adapter):
         blesonwin.stop_observer()
 
     def start_advertising(self, advertisement, scan_response=None):
-        raise NotImplementedError
+        log.debug("TODO: pass user adv data")
+        blesonwin.start_advertiser()
 
     def stop_advertising(self):
-        raise NotImplementedError
+        blesonwin.stop_advertiser()
 
     def _on_advertising_data(self, data):
         try:

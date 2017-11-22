@@ -37,7 +37,7 @@ Linux:      Observing and Advertising works, it is the most functional of all 3 
 
 Mac:        Observing and Advertising works, but the actual published Advertisement data is ultimately decided by the OS.
 
-Windows:    Observing works but starting Advertising will result in a crash.
+Windows:    Observing works but Advertising used hardcoded test payload data for now.
 
 
 Feedback
