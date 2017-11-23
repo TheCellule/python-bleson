@@ -45,7 +45,7 @@ class SuperClean(clean):
 class Tag(SimpleCommand):
 
     def run(self):
-        rc = os.system("git tag -a %s -m 'version %s'" % (version, version))
+        rc = os.system("git tag -a RELEASE_%s -m 'Release version %s'" % (version, version))
         if rc:
             sys.exit(rc)
         rc = os.system("git push --tags")
