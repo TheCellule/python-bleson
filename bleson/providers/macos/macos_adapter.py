@@ -10,7 +10,7 @@ from PyObjCTools import AppHelper
 import CoreBluetooth
 import ctypes
 
-from threading import Event
+from threading import Event, Lock
 
 
 ######################################
@@ -46,11 +46,13 @@ def dispatch_queue_create(name):
 # The adapter is a singleton because of the (singleton) nature of the underlying native NSApp runtime.
 class Singleton(type):
     _instances = {}
+    __singleton_lock = threading.Lock()
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            with cls.__singleton_lock:
+                cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 
 class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
@@ -69,13 +71,12 @@ class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
         self._manager = None
         self._peripheral_manager = None
         self._runloop_started_lock = Event()
-        self._started = False
+
+        self._socket_poll_thread.start()
 
     def open(self):
-        if not self._started:
-            self._started = True
-            self._socket_poll_thread.start()
-            self.wait_for_event_timeout(self._runloop_started_lock)
+        self.wait_for_event_timeout(self._runloop_started_lock)
+        #self._runloop_started_lock.set()
 
     def on(self):
         log.debug("TODO: adatper on")
@@ -92,11 +93,13 @@ class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
 
     def start_scanning(self):
         self.wait_for_event_timeout(self._runloop_started_lock)
-        self._manager.scanForPeripheralsWithServices_options_(None, None)
+        if self._manager:
+            self._manager.scanForPeripheralsWithServices_options_(None, None)
 
     def stop_scanning(self):
         log.debug("")
-        self._manager.stopScan()
+        if self._manager:
+            self._manager.stopScan()
 
 
     def start_advertising(self, advertisement, scan_response=None):
