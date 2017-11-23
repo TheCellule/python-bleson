@@ -6,8 +6,8 @@ from distutils.command.clean import clean
 from distutils.core import Command
 from distutils.dir_util import remove_tree
 
-# bleson/VERSION file must have {x}.{y}.{z}dev
-# the dev should be stripped for 'publish' (i.e. set MODULE_VERSION env var, first obtained by CI or user from bleson/VERSION)
+# bleson/VERSION file must follow: https://www.python.org/dev/peps/pep-0440/
+
 version_file = open(os.path.join('bleson', 'VERSION'))
 version = version_file.read().strip()
 
