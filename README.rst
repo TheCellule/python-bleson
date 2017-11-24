@@ -13,7 +13,7 @@ python-bleson
    :target: https://github.com/TheCellule/python-bleson/blob/master/LICENSE
    :alt: MIT License
 
-Bleson is a cross platform Python 3 module for using Bluetooth LE.
+Bleson is a cross platform Python 3 module access Bluetooth LE API's.
 
 The supported Bluetooth LE roles are: Observer, Advertiser (inc. Beacon), Peripheral* and Central*.
 
