@@ -17,5 +17,3 @@ python3 -m bleson --observer
 deactivate
 cd -
 
-
-
