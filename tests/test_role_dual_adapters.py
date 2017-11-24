@@ -18,24 +18,26 @@ TEST_DURATION_SECS = 5
 
 class TestDualAdapters(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        if not sys.platform.lower().startswith('linux'):
-            raise unittest.SkipTest("Dual adapter tests only run on Linux")
+    def __init__(self, _):
+        super().__init__(_)
+
+        self.previous_log_level = set_level(DEBUG)
 
         provider = get_provider()
-        cls.adapter0 = provider.get_adapter(0)  # Used for the Observer role
-        cls.adapter1 = provider.get_adapter(1)  # Used for the Advertiser role
+        self.adapter0 = provider.get_adapter(0)  # Used for the Observer role
+        self.adapter1 = provider.get_adapter(1)  # Used for the Advertiser role
 
         # Turn on bleson DEBUG logging, keeping note of the previous setting.
-        cls.previous_log_level = set_level(DEBUG)
 
-    @classmethod
-    def tearDownClass(cls):
+    def __del__(self):
         # Restore logging level, in case we're running in a test suite
-        set_level(cls.previous_log_level)
+        set_level(self.previous_log_level)
+
 
     def test_observer_advertiser_pair(self):
+
+        if not sys.platform.lower().startswith('linux'):
+            raise unittest.SkipTest("Dual adapter tests only run on Linux")
 
         # ----------------------------------------
         # Setup the Observer, on adatper 0
@@ -92,6 +94,9 @@ class TestDualAdapters(unittest.TestCase):
 
 
     def test_observer_beacon_pair(self):
+
+        if not sys.platform.lower().startswith('linux'):
+            raise unittest.SkipTest("Dual adapter tests only run on Linux")
 
         observer = Observer(self.adapter0)
         found_addresses = set()

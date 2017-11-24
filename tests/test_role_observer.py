@@ -20,16 +20,15 @@ BLE_DEVICE_LOCALNAME='Apple TV'
 
 class TestRoles(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.adapter = get_provider().get_adapter()
+    def __init__(self, _):
+        super().__init__(_)
+        self.adapter = get_provider().get_adapter()
         # Turn on bleson DEBUG logging, keeping note of the previous setting.
-        cls.previous_log_level = set_level(DEBUG)
+        self.previous_log_level = set_level(DEBUG)
 
-    @classmethod
-    def tearDownClass(cls):
+    def __del__(self):
         # Restore logging level, in case we're running in a test suite
-        set_level(cls.previous_log_level)
+        set_level(self.previous_log_level)
 
     def test_observer(self):
 

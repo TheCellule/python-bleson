@@ -15,20 +15,19 @@ from bleson.logger import log
 
 TEST_DURATION=1
 
+
 class TestExamples(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
+    def test_all_examples(self):
         path = os.path.abspath(__file__)
         dir_path = os.path.dirname(path)
         examples_path = os.path.join(dir_path, '..', 'examples')
         examples_glob = os.path.join(examples_path, '*.py')
 
-        cls.scripts = glob.glob(examples_glob)
-        log.debug(cls.scripts)
+        scripts = glob.glob(examples_glob)
+        log.debug(scripts)
 
-    def test_all_examples(self):
-        for script in self.scripts:
+        for script in scripts:
             log.info("Running {}".format(script))
             sys.argv = ['', str(TEST_DURATION)]
 

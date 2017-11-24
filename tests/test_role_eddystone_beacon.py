@@ -11,12 +11,9 @@ BEACON_TIME = 10
 
 class TestBeacons(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.adapter = get_provider().get_adapter()
-
     def test_eddystone(self):
-        beacon = EddystoneBeacon(self.adapter, 'https://www.google.com/')
+        adapter = get_provider().get_adapter()
+        beacon = EddystoneBeacon(adapter, 'https://www.google.com/')
         beacon.start()
         log.info("Starting beacon for {} seconds, url={}".format(BEACON_TIME, beacon.url))
         sleep(BEACON_TIME)

@@ -15,16 +15,13 @@ MICROBIT1_BDADDR=BDAddress('f5:3a:c9:b0:15:f6')
 
 class TestAdvertiser(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.adapter = get_provider().get_adapter()
-
     def test_advertiser(self):
+        adapter = get_provider().get_adapter()
 
         advertisement = Advertisement()
         advertisement.name = 'bleson'
 
-        advertiser = Advertiser(self.adapter)
+        advertiser = Advertiser(adapter)
         advertiser.advertisement = advertisement
 
         advertiser.start()

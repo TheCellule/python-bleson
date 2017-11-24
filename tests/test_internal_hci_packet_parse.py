@@ -15,17 +15,16 @@ HEARTRATE_ADV_REPORT    = hexstring_to_bytearray('3e 29 02 01 00 01 3f 55 b5 74 
 THERMOMETER_ADV_REPORT  = hexstring_to_bytearray('3e 29 02 01 00 01 28 5f 74 ec 4f 6e 1d 02 01 1a 05 03 0a 18 09 18 13 09 48 65 61 6c 74 68 20 54 68 65 72 6d 6f 6d 65 74 65 72 b6')
 
 NRF51X_LEGACY_DFU_ADV_REPORT = hexstring_to_bytearray('3e 28 02 01 00 01 bd ac 2c fb 4e 51 1c 02 01 1a 11 07 23 d1 bc ea 5f 78 23 15 de ef 12 12 30 15 00 00 06 09 6e 52 46 35 78 b9')
+
+
 class TestHCIParsers(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        # Turn on bleson DEBUG logging, keeping note of the previous setting.
-        cls.previous_log_level = set_level(DEBUG)
+    def __init__(self, _):
+        super().__init__(_)
+        self.previous_log_level = set_level(DEBUG)
 
-    @classmethod
-    def tearDownClass(cls):
-        # Restore logging level, in case we're running in a test suite
-        set_level(cls.previous_log_level)
+    def __del__(self):
+        set_level(self.previous_log_level)
 
 
 
