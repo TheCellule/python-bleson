@@ -46,7 +46,7 @@ class Tag(SimpleCommand):
 
     def run(self):
         rc = os.system("git tag -a RELEASE_%s -m 'Release version %s'" % (version, version))
-        if rc:
+        if rc != 0:
             sys.exit(rc)
         rc = os.system("git push --tags")
         sys.exit(rc)
@@ -57,9 +57,14 @@ class Publish(SimpleCommand):
     def run(self):
         pypi_repo_name = os.getenv('PYPI_REPO_NAME', 'pypitest')
 
+        pypi_repo_username = os.getenv('PYPI_REPO_USERNAME', None)
+        pypi_repo_password = os.getenv('PYPI_REPO_PASSWORD', None)
+        user_opt = "-u {}".format(pypi_repo_username) if pypi_repo_username else ""
+        pass_opt = "-p {}".format(pypi_repo_password) if pypi_repo_password else ""
+
+
         # TODO: use a Pythonic method
-        upload_cmd = "twine upload --repository {} dist/*".format(pypi_repo_name)
-        print(upload_cmd)
+        upload_cmd = "twine upload --repository {} {} {} dist/*".format(pypi_repo_name, user_opt, pass_opt)
         rc = os.system(upload_cmd)
         sys.exit(rc)
 
