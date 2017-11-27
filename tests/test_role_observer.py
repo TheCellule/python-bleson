@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-import sys
+import os, sys
 from time import sleep
 
 
@@ -12,11 +12,8 @@ from bleson.logger import log, set_level, DEBUG
 
 SCANTIME = 5          # seconds
 
-# TODO: get from env config
-BLE_DEVICE_BDADDR=BDAddress('F4:58:8E:30:7B:43')        # Puck.js
-#BLE_DEVICE_LOCALNAME='Puck.js 7b43'
-#BLE_DEVICE_LOCALNAME='Bluefruit52'
-BLE_DEVICE_LOCALNAME='Apple TV'
+BLE_DEVICE_BDADDR=BDAddress(os.getenv('BLE_TESTDEVICE_0_BDADDR', None))
+BLE_DEVICE_LOCALNAME=os.getenv('BLE_TESTDEVICE_0_LOCALNAME', None)
 
 class TestRoles(unittest.TestCase):
 
