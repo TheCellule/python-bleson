@@ -47,9 +47,9 @@ class Tag(SimpleCommand):
     def run(self):
         rc = os.system("git tag -a RELEASE_%s -m 'Release version %s'" % (version, version))
         if rc != 0:
-            sys.exit(rc)
+            sys.exit(rc>>8)
         rc = os.system("git push --tags")
-        sys.exit(rc)
+        sys.exit(rc>>8)
 
 
 class Publish(SimpleCommand):
