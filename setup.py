@@ -66,7 +66,7 @@ class Publish(SimpleCommand):
         # TODO: use a Pythonic method
         upload_cmd = "twine upload --repository {} {} {} dist/*".format(pypi_repo_name, user_opt, pass_opt)
         rc = os.system(upload_cmd)
-        sys.exit(rc)
+        sys.exit(fix RC return code)
 
 setup(
     name='bleson',
