@@ -55,16 +55,8 @@ class Tag(SimpleCommand):
 class Publish(SimpleCommand):
 
     def run(self):
-        pypi_repo_name = os.getenv('PYPI_REPO_NAME', 'pypitest')
-
-        pypi_repo_username = os.getenv('PYPI_REPO_USERNAME', None)
-        pypi_repo_password = os.getenv('PYPI_REPO_PASSWORD', None)
-        user_opt = "-u {}".format(pypi_repo_username) if pypi_repo_username else ""
-        pass_opt = "-p {}".format(pypi_repo_password) if pypi_repo_password else ""
-
-
         # TODO: use a Pythonic method
-        upload_cmd = "twine upload --repository {} {} {} dist/*".format(pypi_repo_name, user_opt, pass_opt)
+        upload_cmd = "twine upload dist/*"
         rc = os.system(upload_cmd)
         sys.exit(rc>>8)
 
