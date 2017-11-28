@@ -19,6 +19,13 @@ if not version:
 
 print("Version={}".format(version))
 
+def _os_run_chk(cmd):
+    print("CMD={}".format(cmd))
+    rc = os.system(cmd)
+    print("RC ={}".format(rc))
+    if rc != 0:
+        sys.exit(rc)
+
 class SimpleCommand(Command):
     # default some Command abstract class boilerplate for subclasses
     user_options = []
@@ -45,20 +52,15 @@ class SuperClean(clean):
 class Tag(SimpleCommand):
 
     def run(self):
-        rc = os.system("git tag -a RELEASE_%s -m 'Release version %s'" % (version, version))
-        if rc != 0:
-            sys.exit(rc>>8)
-        rc = os.system("git push --tags")
-        sys.exit(rc>>8)
+        _os_run_chk("git tag -a RELEASE_%s -m 'Release version %s'" % (version, version))
+        _os_run_chk("git push --tags")
 
 
 class Publish(SimpleCommand):
 
     def run(self):
         # TODO: use a Pythonic method
-        upload_cmd = "twine upload dist/*"
-        rc = os.system(upload_cmd)
-        sys.exit(rc>>8)
+        _os_run_chk("twine upload dist/*")
 
 setup(
     name='bleson',
