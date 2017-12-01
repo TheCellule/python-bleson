@@ -24,7 +24,7 @@ def _os_run_chk(cmd):
     rc = os.system(cmd)
     print("RC ={}".format(rc))
     if rc != 0:
-        sys.exit(rc)
+        sys.exit(1)
 
 class SimpleCommand(Command):
     # default some Command abstract class boilerplate for subclasses
