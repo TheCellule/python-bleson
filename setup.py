@@ -65,7 +65,7 @@ class Publish(SimpleCommand):
 setup(
     name='bleson',
     version=version,
-    packages= find_packages(exclude=('tests',))),
+    packages= find_packages(exclude=('tests',)),
     url='https://github.com/TheCellule/python-bleson',
     license='MIT',
     author='TheCellule',
