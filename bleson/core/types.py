@@ -19,16 +19,57 @@ class ValueObject(object):
 
 
 class UUID16(ValueObject):
+    """ 16Bit UUID Type
+
+        :param uuid: The 16bit uuid source value
+        :param little_endian: Byte order, default True
+        :type uuid: string, list, tuple, bytes or bytearray
+        :type little_endian: bool
+
+        .. testsetup:: *
+
+           from bleson.core.types import UUID16
+
+        Example of initialisation with a 16bit integer:
+
+        .. testcode:: UUID16_INT
+
+           print(UUID16(0xFFFF))
+
+        Output:
+
+        .. testoutput:: UUID16_INT
+
+           UUID16(0xffff)
+
+
+        Example of initialisation with a list:
+
+        .. testcode:: UUID16_LIST
+
+           print(UUID16([0x34, 0x12]))
+
+        Output:
+
+        .. testoutput:: UUID16_LIST
+
+           UUID16(0x1234)
+        """
+
+    # Doctest example:
+    # .. doctest:: UUID16
+    #     >>> from bleson.core.types import UUID16
+    #     >>> uuid=UUID16(0xffff)
+    #     UUID16(0xfff0)
 
     def __init__(self, uuid, little_endian=True):
-        """ Create UUID16, non-int types are assumed to be little endian (reverse order)"""
 
         log.debug(("UUID16 type: {} value={}".format(type(uuid), uuid)))
         if isinstance(uuid, memoryview):
             uuid = uuid.tolist()
 
         if isinstance(uuid, int):
-            if not 0 < uuid < 0xffff:
+            if not 0 <= uuid <= 0xffff:
                 raise ValueError('Invalid UUID16 value {}'.format(uuid))
 
         elif isinstance(uuid, list) or isinstance(uuid, tuple):
@@ -72,7 +113,42 @@ class UUID16(ValueObject):
 
 
 class UUID128(ValueObject):
+    """ 128 Bit Type.
 
+        :param uuid: The 16bit uuid source value
+        :param little_endian: Byte order, default True
+        :type uuid: string, list, tuple, bytes or bytearray
+        :type little_endian: bool
+
+        .. testsetup:: *
+
+           from bleson.core.types import UUID128
+
+        Example of initialisation with a list:
+
+        .. testcode:: UUID128
+
+           print(UUID128([0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, 0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00]))
+
+        Output:
+
+        .. testoutput:: UUID128
+
+           UUID128('00001530-1212-efde-1523-785feabcd123')
+
+
+        Example of initialisation with a 16bit integer:
+
+        .. testcode:: UUID128_INT
+
+           print(UUID128(0x1234))
+
+        Output:
+
+        .. testoutput:: UUID128_INT
+
+           UUID128('00001234-0000-1000-8000-00805f9b34fb')
+    """
     def __init__(self, uuid, little_endian=True):
         """ Create UUID128, non-int types must be little endian (e.g. 'reversed' order w.r.t. displayed UUID)"""
 
@@ -84,7 +160,7 @@ class UUID128(ValueObject):
 
         # Massage 'uuid' into a string that the built-in UUID() contructor accepts
         if isinstance(uuid, int):
-            if not 0 < uuid < 0xffff:
+            if not 0 <= uuid <= 0xffff:
                 raise ValueError('Invalid UUID16 value {} fro UUID128 promotion'.format(uuid))
             uuid = UUID("0000{:04x}-0000-1000-8000-00805F9B34FB".format(uuid)).hex
 
@@ -135,24 +211,61 @@ class UUID128(ValueObject):
 
 
 class BDAddress(ValueObject):
+    """ 128 Bit Type.
 
+        :param uuid: The 16bit uuid source value
+        :type uuid: string, list, tuple, bytes or bytearray
+        :type little_endian: bool
+
+        .. testsetup:: *
+
+           from bleson.core.types import BDAddress
+
+        Example of initialisation with a list:
+
+        .. testcode:: BDADDRESS_LIST
+
+           print(BDAddress([0xab, 0x90, 0x78, 0x56, 0x34, 0x12]))
+
+        Output:
+
+        .. testoutput:: BDADDRESS_LIST
+
+           BDAddress('12:34:56:78:90:AB')
+
+
+        Example of initialisation with a bytearray:
+
+        .. testcode:: BDADDRESS_BYTEARRAY
+
+           print(BDAddress(bytearray([0xab, 0x90, 0x78, 0x56, 0x34, 0x12])))
+
+        Output:
+
+        .. testoutput:: BDADDRESS_BYTEARRAY
+
+           BDAddress('12:34:56:78:90:AB')
+
+
+    """
     # TODO:  add an overide for little_endian=True\False flag, default True, for list-like types
-    def __init__(self, address:str=None):
+    def __init__(self, address=None):
+        if not address:
+            address="00:00:00:00:00:00"             # TODO: is defaulting this a good idea?
         # expect a string of the format "xx:xx:xx:xx:xx:xx"
         # or a 6 element; tuple, list, bytes or bytearray
         if isinstance(address, str):
             # TODO: regex based check
             if len(address) != 6*2+5:
-                raise ValueError('Unexpected address length of {} for {}'.format(len(address, address)))
+                raise ValueError('Unexpected address length of {} for {}'.format(len(address), address))
             address = address
-        elif isinstance(address, list) or isinstance(address, tuple):
+        elif isinstance(address, list) \
+                or isinstance(address, tuple) \
+                or isinstance(address, bytes) \
+                or isinstance(address, bytearray):
             if len(address) != 6:
-                raise ValueError('Unexpected address length of {} for {}'.format(len(address, address)))
-            address = "%02x:%02x:%02x:%02x:%02x:%02x" % address
-        elif isinstance(address, bytes) or isinstance(address, bytearray):
-            if len(address) != 6:
-                raise ValueError('Unexpected address length of {} for {}'.format(len(address, address)))
-            address = ':'.join([format(c, '02x') for c in address])
+                raise ValueError('Unexpected address length of {} for {}'.format(len(address), address))
+            address =':'.join([format(c, '02x') for c in list(reversed(address))])
         else:
             raise TypeError('Unsupported address type: {}'.format(type(address)))
 
@@ -171,7 +284,32 @@ class BDAddress(ValueObject):
 
 
 class Device(ValueObject):
+    """ Bluetooth LE Device Info.
 
+       :param address: Bluetooth Device Adress
+       :param name: device name
+       :param rssi: device RSSI
+       :type address: BDAddress
+       :type name: str
+       :type rssi: integer
+
+       .. testsetup:: *
+
+          from bleson.core.types import Device, BDAddress
+
+       Example of initialisation with list:
+
+       .. testcode:: DEVICE
+
+          print(Device(address=BDAddress('12:34:56:78:90:AB'), name='bleson', rssi=-99))
+
+       Output:
+
+       .. testoutput:: DEVICE
+
+          Device(address=BDAddress('12:34:56:78:90:AB'), name='bleson', rssi=-99)
+
+       """
     def __init__(self, address:BDAddress=None, name=None, rssi=None):
         self.address = address
         self.name = name
@@ -179,7 +317,7 @@ class Device(ValueObject):
         log.debug(self)
 
     def __repr__(self):
-        return "Device(address={}, name={}, rssi={})".format(self.address, self.name, self.rssi)
+        return "Device(address={}, name='{}', rssi={})".format(self.address, self.name, self.rssi)
 
     def __eq__(self, other):
         return isinstance(other, Device) and self.address == other.address
@@ -189,7 +327,36 @@ class Device(ValueObject):
 
 
 class Advertisement(ValueObject):
+    """ Bluetooth LE AdvertisementReport
 
+       :param address: Bluetooth Device Adress
+       :param name: device name
+       :param rssi: device RSSI
+       :param tx_power: device transmit power
+       :param raw_data: pre-rolled advertisement payload
+       :type address: BDAddress
+       :type name: str
+       :type rssi: integer
+       :type tx_power: integer
+       :type raw_data: bytearray
+
+       .. testsetup:: *
+
+          from bleson.core.types import Advertisement, BDAddress
+
+       Example of initialisation with list:
+
+       .. testcode:: ADV_REPORT_1
+
+          print(Advertisement(address=BDAddress('12:34:56:78:90:AB'), name='bleson', rssi=-99, tx_power=0))
+
+       Output:
+
+       .. testoutput:: ADV_REPORT_1
+
+          Advertisement(flags=0x06, name='bleson', txpower=0, uuid16s=[], uuid128s=[], rssi=-99, mfg_data=None)
+
+       """
     def __init__(self, name=None, address=None, rssi=None, tx_power=None, raw_data=None):
         #TODO: use kwargs
         self.flags      =   6   # uint8         # default to LE_GENERAL_DISCOVERABLE | BREDR_NOT_SUPPORTED
@@ -220,7 +387,7 @@ class Advertisement(ValueObject):
 
     def __repr__(self):
         # TODO: appearance etc...
-        return "Advertisement(flags=0x{:02x}, name={}, txpower={} uuid16s={} uuid128s={} rssi={} mfg_data={})".format(
+        return "Advertisement(flags=0x{:02x}, name='{}', txpower={}, uuid16s={}, uuid128s={}, rssi={}, mfg_data={})".format(
             self.flags, self.name, self.tx_pwr_lvl, self.uuid16s, self.uuid128s, self.rssi, self.mfg_data)
 
 
