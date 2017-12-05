@@ -11,12 +11,12 @@ Welcome to Bleson's documentation!
    :numbered:
 
    installing
+   examples
+   cli_tools
    api_datatypes
    api_core_roles
    api_extra_roles
    api_other
-   examples
-   cli_tools
    contributing
    development
    api_internal
