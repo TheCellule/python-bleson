@@ -4,10 +4,24 @@ from bleson.core.types import Advertisement, UUID16, UUID128
 from bleson.core.hci.constants import *
 from bleson.logger import log
 from bleson.core.hci.type_converters import bytearray_to_hexstring
-import objc
-from Foundation import *
-from PyObjCTools import AppHelper
-import CoreBluetooth
+
+# Work around for Sphinx
+try:
+    import objc
+    from Foundation import *
+    from PyObjCTools import AppHelper
+    import CoreBluetooth
+except (ImportError, AttributeError) as e:
+    import sys
+    if 'sphinx' in sys.modules:
+        log.warning("macOS modules not found, if this is a documentation build all is good")
+    else:
+        log.error("macOS modules not found, but this doesn't look like a documentation build")
+        raise e
+
+
+
+
 import ctypes
 
 from threading import Event, Lock

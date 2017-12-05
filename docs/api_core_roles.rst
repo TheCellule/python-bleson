@@ -10,7 +10,8 @@ Advertiser Role
 
 .. note:: macOS implementation note
 
-   You can only set the name and the services UUID's, and visbility of your advertiser depends on your app being a foreground process.
+    You can only set the name and the services UUID's, and the visibility of your advertisement data depends on your app
+    being a foreground or background process.
 
    See the CoreBluetooth_ documentation.
 
