@@ -6,6 +6,33 @@ from distutils.command.clean import clean
 from distutils.core import Command
 from distutils.dir_util import remove_tree
 
+HAS_SPHINX=False
+try:
+    from sphinx.setup_command import BuildDoc
+    HAS_SPHINX=True
+
+
+    class Doctest(Command):
+        description = 'Run doctests with Sphinx'
+        user_options = []
+
+        def initialize_options(self):
+            pass
+
+        def finalize_options(self):
+            pass
+
+        def run(self):
+            from sphinx.application import Sphinx
+            sph = Sphinx('./docs',  # source directory
+                         './docs', # directory containing conf.py
+                         './docs/_build',  # output directory
+                         './docs/_build/doctrees',  # doctree directory
+                         'doctest')  # finally, specify the doctest builder
+            sph.build()
+except ImportError:
+    pass
+
 # bleson/VERSION file must follow: https://www.python.org/dev/peps/pep-0440/
 
 version_file = open(os.path.join('bleson', 'VERSION'))
@@ -62,6 +89,18 @@ class Publish(SimpleCommand):
         # TODO: use a Pythonic method
         _os_run_chk("twine upload dist/*")
 
+
+cmdclass={
+        'clean': SuperClean,
+        'publish': Publish,
+        'tag': Tag,
+    }
+
+
+if HAS_SPHINX:
+    cmdclass['doc'] = BuildDoc
+    cmdclass['doctest'] = Doctest
+
 setup(
     name='bleson',
     version=version,
@@ -80,10 +119,11 @@ setup(
         ]
     },
     test_suite='tests',
-    cmdclass={
-        'clean': SuperClean,
-        'publish': Publish,
-        'tag': Tag,
+    cmdclass=cmdclass,
+    command_options={
+        'doc': {
+            'build_dir': ('setup.py', 'docs/_build'),
+        },
     },
     classifiers=[
         "Development Status :: 3 - Alpha",

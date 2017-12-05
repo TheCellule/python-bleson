@@ -4,12 +4,15 @@ from bleson.interfaces.role import Role
 
 
 class Observer(Role):
+    """ Observer """
 
     def __init__(self, adapter : Adapter, on_advertising_data=None):
         self.adapter = adapter
         self.adapter.on_advertising_data = on_advertising_data
 
     def start(self):
+        """ Start the observer """
+
         self.adapter.start_scanning()
 
     def stop(self):
