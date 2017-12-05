@@ -5,7 +5,19 @@ from bleson.core.hci.constants import *
 from bleson.logger import log
 from bleson.core.hci.type_converters import bytearray_to_hexstring
 
-import blesonwin
+# Work around for Sphinx
+try:
+    import blesonwin
+except (ImportError, AttributeError) as e:
+    import sys
+    if 'sphinx' in sys.modules:
+        log.warning("blesonwin not found, if this is a documentation build all is good")
+    else:
+        log.error("blesonwin not found, but this doesn't look like a documentation build")
+        raise e
+
+    blesonwin = {}
+
 
 class BluetoothAdapter(Adapter):
 

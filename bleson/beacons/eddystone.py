@@ -1,10 +1,33 @@
 from bleson.core.roles import Advertiser
 from bleson.core.types import Advertisement
+from bleson.interfaces.adapter import Adapter
 from bleson.logger import log
 
 
 class EddystoneBeacon(Advertiser):
+    """ PyhsicalWeb (Eddystone) Beaon Advertiser
 
+        :param adapter: bluetooth adapter
+        :param url: URL to publish, maximu length of 17
+        :type adapter: :class:`bleson.interfaces.adapter.Adapter`
+        :type url: str
+
+        .. testsetup:: *
+
+           from bleson.beacons.eddystone import EddystoneBeacon
+
+        Example of initialisation with a URL:
+
+        .. testcode:: EDDYSTONE_1
+
+           print(EddystoneBeacon('www.bluetooth.com'))
+
+        Output:
+
+        .. testoutput:: EDDYSTONE_1
+
+           <bleson.beacons.eddystone.EddystoneBeacon object at ...>
+    """
     def __init__(self, adapter, url=None):
         super().__init__(adapter)
         self.advertisement=Advertisement()

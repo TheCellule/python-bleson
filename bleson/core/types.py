@@ -10,6 +10,8 @@ from uuid import UUID
 class ValueObject(object):
 
     def __bytes__(self):
+        """Return bytes in little endian byte order."""
+
         raise NotImplementedError
 
     def __len__(self):
