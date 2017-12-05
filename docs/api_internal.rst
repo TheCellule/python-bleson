@@ -50,7 +50,7 @@ The CoreBluetooth dispatch queue is run in a background thread, requires the use
 Windows
 -------
 
-On Windows there is a additional module used called 'blesonwin', it provides a native Python module to access the WinRT BLE API's.
+On Windows there is an additional module used called 'blesonwin', it provides a Python native module to access the WinRT BLE API's.
 It's not recommended to use this module directly in user scripts.
 
 
