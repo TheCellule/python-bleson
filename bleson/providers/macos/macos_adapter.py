@@ -1,4 +1,6 @@
-import threading
+from threading import Thread, Event, Lock
+import ctypes
+
 from bleson.interfaces.adapter import Adapter
 from bleson.core.types import Advertisement, UUID16, UUID128
 from bleson.core.hci.constants import *
@@ -20,13 +22,6 @@ except (ImportError, AttributeError) as e:
         raise e
 
 
-
-
-import ctypes
-
-from threading import Event, Lock
-
-
 ######################################
 # Dispatch Queue support
 
@@ -36,22 +31,23 @@ from threading import Event, Lock
 # see: https://stackoverflow.com/questions/5030730/is-it-acceptable-to-subclass-c-void-p-in-ctypes
 #class dispatch_queue_t(ctypes.Structure):
 #    pass
-# The above is not used as the PyObcC doest accept it as a type to create the pointer to the dispatch_queu_
+# The above is not used as the PyObcC 4.0.1 doesn't accept it as a type to create the pointer to the dispatch_queu_
 
 NULL_PTR = ctypes.POINTER(ctypes.c_int)()
+_lib = None
 
-
-# Load the dispatch library
-_lib = ctypes.cdll.LoadLibrary("/usr/lib/system/libdispatch.dylib")
-
-_dispatch_queue_create = _lib.dispatch_queue_create
-_dispatch_queue_create.argtypes = [ctypes.c_char_p, ctypes.c_void_p]  # 2nd param is stuct, but we don't use it.
-_dispatch_queue_create.restype = ctypes.c_void_p
-# https://developer.apple.com/documentation/dispatch/1453030-dispatch_queue_create
-
-
-
+# lazy load the library, helps Sphinx.
 def dispatch_queue_create(name):
+    global _lib, _dispatch_queue_create
+    if not _lib:
+        # Load the dispatch library, once
+        _lib = ctypes.cdll.LoadLibrary("/usr/lib/system/libdispatch.dylib")
+
+    _dispatch_queue_create = _lib.dispatch_queue_create
+    _dispatch_queue_create.argtypes = [ctypes.c_char_p, ctypes.c_void_p]  # 2nd param is stuct, but we don't use it.
+    _dispatch_queue_create.restype = ctypes.c_void_p
+    # https://developer.apple.com/documentation/dispatch/1453030-dispatch_queue_create
+
     b_name = name.encode('utf-8')
     c_name = ctypes.c_char_p(b_name)
     return _dispatch_queue_create(c_name, NULL_PTR)
@@ -60,7 +56,7 @@ def dispatch_queue_create(name):
 # The adapter is a singleton because of the (singleton) nature of the underlying native NSApp runtime.
 class Singleton(type):
     _instances = {}
-    __singleton_lock = threading.Lock()
+    __singleton_lock = Lock()
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
@@ -79,7 +75,7 @@ class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
         self.on_advertising_data = None
         self.connected = False
         self._keep_running = True
-        self._socket_poll_thread = threading.Thread(target=self._runloop_thread, name='BlesonObjCRunLoop')
+        self._socket_poll_thread = Thread(target=self._runloop_thread, name='BlesonObjCRunLoop')
         self._socket_poll_thread.setDaemon(True)
         self._dispatch_queue = dispatch_queue_create('blesonq')
         self._manager = None
