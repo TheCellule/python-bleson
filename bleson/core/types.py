@@ -211,7 +211,7 @@ class UUID128(ValueObject):
 
 
 class BDAddress(ValueObject):
-    """ 128 Bit Type.
+    """ Bluetooth Device Address.
 
         :param address: The device bluetooth address
         :type uuid: string, list, tuple, bytes or bytearray
@@ -286,7 +286,7 @@ class BDAddress(ValueObject):
 class Device(ValueObject):
     """ Bluetooth LE Device Info.
 
-       :param address: Bluetooth Device Adress
+       :param address: Bluetooth Device Address
        :param name: device name
        :param rssi: device RSSI
        :type address: BDAddress
