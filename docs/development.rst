@@ -17,6 +17,7 @@ Building the docs
 -----------------
 
 Build the documentation:
+
 .. code-block:: console
 
     python3 setup.py doc
@@ -40,8 +41,14 @@ Test suite
 Release to PyPi
 ---------------
 
-Ensure the latest tools are installed:
+A CI integration takes care of testing and then publishing to PyPi, all you need todo is
+
++ merge the changes into master,
++ bump `bleson/VERSION`,
++ `git add`
++ `git commit`
++ run:
 
 .. code-block:: console
 
-    pip3 install --upgrade pip setuptools wheel twine
+    python3 setup.py tag

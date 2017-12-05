@@ -11,8 +11,7 @@ Bleson uses the HCI Sockets interface, so is not dependat on the userland BlueZ 
 API - Mac
 ---------
 
-To use CoreBluetooth in a background thread Bleson mixes the use of `ctypes` and PyObjC.
-A `dispatch_queue_t` is created using `ctypes` and is then passed to the CoreBluetooth managers via PyObjC.
+The CoreBluetooth dispatch queue is run in a background thread, requires the use of features added in PyObjC 4.1 for macOS < 10.12.
 
 
 API - Windows

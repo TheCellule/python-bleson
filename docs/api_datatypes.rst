@@ -1,6 +1,6 @@
 
-Core Data Types
-***************
+API - Core Data Types
+*********************
 
 Value objects representing Bluetooth Core Spec data types.
 

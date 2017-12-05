@@ -1,5 +1,5 @@
-Additional Bluetooth LE Roles
-*****************************
+API - Additional Bluetooth LE Roles
+***********************************
 
 Beacons
 -------

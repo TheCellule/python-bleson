@@ -213,7 +213,7 @@ class UUID128(ValueObject):
 class BDAddress(ValueObject):
     """ 128 Bit Type.
 
-        :param uuid: The 16bit uuid source value
+        :param address: The device bluetooth address
         :type uuid: string, list, tuple, bytes or bytearray
         :type little_endian: bool
 

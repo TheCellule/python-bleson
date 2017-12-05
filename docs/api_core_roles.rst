@@ -1,5 +1,5 @@
-Core Bluetooth LE Roles
-***********************
+API - Core Bluetooth LE Roles
+*****************************
 
 Advertiser Role
 ===============
