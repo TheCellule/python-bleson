@@ -27,7 +27,7 @@ Platform Implementations
 Linux
 -----
 
-Bleson uses the HCI Sockets interface, so is not dependat on the userland BlueZ componenets, it's pure Python sockets.
+Bleson uses the LInux kernel's HCI Sockets interface, is not dependent on the userland BlueZ service or binaries, it's pure Python sockets.
 
 .. autoclass:: bleson.providers.linux.linux_provider.LinuxProvider
    :members:
