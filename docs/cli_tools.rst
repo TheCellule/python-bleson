@@ -1,12 +1,12 @@
-CLI tools
-**********
+Command-Line tools
+******************
 
-Bleson ships with built-in utilities that can be from the command line shell.
+Bleson ships with built-in utilities that can be run directly from the command line.
 
 Observer
 ========
 
-Scan for nearby Bluetooth LE devices and print out any Advertising Reports found:
+Scan for nearby Bluetooth LE devices and print out any Advertising Reports received:
 
 .. code-block:: console
 
