@@ -80,7 +80,7 @@ Further Reading
 Please see examples_ for more details.
 
 + Examples prefixed with 'basic' shows basic Bleson API usage.
-+ Examples prefixed with 'context' shows Blesons context maanger ('with' keyword) API usage.
++ Examples prefixed with 'context' shows Blesons context manger ('with' keyword) API usage.
 
 .. _examples: https://github.com/TheCellule/python-bleson/tree/master/examples/
 

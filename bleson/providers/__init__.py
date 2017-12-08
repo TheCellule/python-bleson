@@ -26,3 +26,6 @@ def get_provider():
     log.debug("Provider is {}".format(_provider))
 
     return _provider
+
+def get_default_adapter():
+    return get_provider().get_adapter()
