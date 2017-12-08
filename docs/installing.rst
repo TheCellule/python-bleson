@@ -93,8 +93,13 @@ Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ Example
 
 .. note::
     It's very alpha, only supporting very basic Bleson Advertising (name only) on the surface.
+
+.. note::
+    Regarding the micro:bit release
+
     There is currently 64k of flash space free, but there is no filesystem currently exposed to uPY (also the micro:bit libraries aren't currently included), soyou have to paste the script in of the USB serial REPL every power on, for now.
     When you do paste if you can use a terminal emulation program that can add inter character delays to 8ms, e.g. CoolTerm available on all the major platforms, you will have more luck pasting text in without characters going missing.
+
 
 
 
