@@ -19,6 +19,8 @@ The (planned) supported Bluetooth LE roles are: Observer, Advertiser (inc. Beaco
 
 The supported platforms are: Linux (e.g. Raspberry Pi), macOS and Windows 10.
 
+There is also early support for MicroPython running on Noridc's nRF5x devices (e.g. from the micro:bit and up)
+
 Other highlights:
 
 - The same Bleson API is used across all platforms.

@@ -76,4 +76,28 @@ Windows 10
     The 'blesonwin' binary (wheel) pacakges have been pre-built for 32bit and 64bit architectures for Python 3.5 and Python 3.6
 
 
+
+MicroPython
+===========
+
+A port of MicroPython to the Apache MyNewt OS with Bluetooth LE support and a native module implementation of the Bleson API is under development for:
+
++ micro:bit
++ Adafruit Feather nRF52 Pro
++ RuuviTag
++ nRF51 dev kit
++ nRF52 dev kit
+
+
+Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ Example should work as is
+
+.. note::
+    It's very alpha, only supporting very basic Bleson Advertising (name only) on the surface.
+    There is currently 64k of flash space free, but there is no filesystem currently exposed to uPY (also the micro:bit libraries aren't currently included), soyou have to paste the script in of the USB serial REPL every power on, for now.
+    When you do paste if you can use a terminal emulation program that can add inter character delays to 8ms, e.g. CoolTerm available on all the major platforms, you will have more luck pasting text in without characters going missing.
+
+
+
 .. _Python: https://www.python.org/downloads/
+.. _TheBubbleworks: https://github.com/TheBubbleworks/micropython-mynewt-firmware
+.. _Advertiser: http://bleson.readthedocs.io/en/latest/examples.html#advertiser-example
