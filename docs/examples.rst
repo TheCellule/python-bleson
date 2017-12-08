@@ -62,15 +62,15 @@ Create a PhysicalWeb (Eddystone) with a URL
     .. testcode:: Beacon
 
         from time import sleep
-        from bleson import get_provider, EddystoneBeacon
+        from bleson import get_default_adapter, EddystoneBeacon
 
-        adapter = get_provider().get_adapter()
+        adapter = get_default_adapter()
 
         beacon = EddystoneBeacon(adapter)
         beacon.url = 'https://www.bluetooth.com/'
         beacon.start()
         sleep(2)
-        beacon .stop()
+        beacon.stop()
 
 
 
