@@ -89,7 +89,7 @@ A port of MicroPython to the Apache MyNewt OS with Bluetooth LE support and a na
 + nRF52 dev kit
 
 
-Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ Example should work as is
+Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ and Beacon_ examples should work as is.
 
 .. note::
     It's very alpha, only supporting very basic Bleson Advertising (name only) on the surface.
@@ -106,3 +106,4 @@ Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ Example
 .. _Python: https://www.python.org/downloads/
 .. _TheBubbleworks: https://github.com/TheBubbleworks/micropython-mynewt-firmware
 .. _Advertiser: http://bleson.readthedocs.io/en/latest/examples.html#advertiser-example
+.. _Beacon: http://bleson.readthedocs.io/en/latest/examples.html#physicalweb-beacon-example
