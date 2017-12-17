@@ -92,13 +92,14 @@ A port of MicroPython to the Apache MyNewt OS with Bluetooth LE support and a na
 Firmware images are downloadable from TheBubbleworks_.   The Advertiser_ and Beacon_ examples should work as is.
 
 .. note::
-    It's very alpha, only supporting very basic Bleson Advertising (name only) on the surface.
+    It's very alpha, currently only supporting very basic Advertising (name only) or Physical Web beacons.
 
 .. note::
     Regarding the micro:bit release
 
-    There is currently 64k of flash space free, but there is no filesystem currently exposed to uPY (also the micro:bit libraries aren't currently included), soyou have to paste the script in of the USB serial REPL every power on, for now.
-    When you do paste if you can use a terminal emulation program that can add inter character delays to 8ms, e.g. CoolTerm available on all the major platforms, you will have more luck pasting text in without characters going missing.
+    There is currently 64k of flash space free, but there is no filesystem currently exposed to uPY (also the micro:bit libraries aren't currently included), so you have to send the script via the USB serial REPL after every power on, for now.
+
+    When you do paste if you use a terminal emulation program that can add inter character delays of around 8ms, e.g. CoolTerm available on all the major platforms, you will have more luck pasting text in without characters going missing.
 
 
 

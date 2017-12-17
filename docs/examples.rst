@@ -52,6 +52,38 @@ Advertise the host as a Bluetooth LE device with the name `bleson`
        sleep(2)
        advertiser.stop()
 
+Peripheral example
+------------------
+
+Create a simple Peripheral
+
+    .. testcode:: Peripheral_LED
+
+        from time import sleep
+        from bleson import get_default_adapter, Peripheral, Service, Characteristic, CHAR_WRITE
+
+        adapter = get_default_adapter()
+
+        peripheral = Peripheral(adapter)
+
+        MICROBIT_LED_SERVICE = 'E95DD91D-251D-470A-A062-FA1922DFA9A8'
+        MICROBIT_LED_CHAR = 'E95D7B77-251D-470A-A062-FA1922DFA9A8'
+
+        def on_data_received(bytes):
+            print(bytes)
+
+        led_service = Service(MICROBIT_LED_SERVICE)
+        led_write_char = Characteristic(MICROBIT_LED_CHAR, CHAR_WRITE)
+        led_write_char.on_data_received = on_data_received
+
+        led_service.add_characteristic(led_write_char)
+
+        peripheral.add_service(led_service)
+
+        peripheral.start()
+        sleep(2)
+        peripheral.stop()
+
 
 
 PhysicalWeb beacon example
