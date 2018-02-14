@@ -267,7 +267,7 @@ class BDAddress(ValueObject):
                 or isinstance(address, bytearray):
             if len(address) != 6:
                 raise ValueError('Unexpected address length of {} for {}'.format(len(address), address))
-            address =':'.join([format(c, '02x') for c in list(reversed(address))])
+            address =':'.join([format(c, '02x') for c in list((address))])
         else:
             raise TypeError('Unsupported address type: {}'.format(type(address)))
 
