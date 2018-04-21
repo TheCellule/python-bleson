@@ -124,10 +124,10 @@ class BluetoothHCIAdapter(Adapter):
         self.write_buffer(cmd)
 
 
-    def set_scan_enable(self, enabled=False, duplicates=False):
+    def set_scan_enable(self, enabled=False, filter_duplicates=False):
         len = 2
         enable = 0x01 if enabled else 0x00
-        dups   = 0x01 if duplicates else 0x00
+        dups   = 0x01 if filter_duplicates else 0x00
         cmd = struct.pack("<BHBBB", HCI_COMMAND_PKT, LE_SET_SCAN_ENABLE_CMD, len, enable, dups)
         self.write_buffer(cmd)
 
@@ -276,7 +276,7 @@ class BluetoothHCIAdapter(Adapter):
         self.set_scan_enable(False)
         self.set_scan_filter()
         self.set_scan_parameters()
-        self.set_scan_enable(True, True)
+        self.set_scan_enable(True, False)
 
     def stop_scanning(self):
         self.set_scan_enable(False)
