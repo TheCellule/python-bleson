@@ -83,7 +83,7 @@ class BluetoothHCIAdapter(Adapter):
         # Just extract a few parts for now
         device_id = hci_dev_info[0]
         device_name = hci_dev_info[1].split(b'\0',1)[0]
-        bd_address = hci_dev_info[7:1:-1]
+        bd_address = hci_dev_info[2:8]
         return Device(address=BDAddress(bd_address), name=device_name)
 
 

@@ -113,7 +113,7 @@ class AdvertisingDataConverters(object):
         # TODO: move these 2 LUTs to a better place
         gap_adv_type = ['ADV_IND', 'ADV_DIRECT_IND', 'ADV_SCAN_IND', 'ADV_NONCONN_IND', 'SCAN_RSP'][data[1]]
         gap_addr_type = ['PUBLIC', 'RANDOM', 'PUBLIC_IDENTITY', 'RANDOM_STATIC'][data[2]]
-        gap_addr = data[8:2:-1]
+        gap_addr = data[3:9]
         rssi = rssi_from_byte(data[-1])
 
 
