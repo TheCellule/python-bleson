@@ -400,7 +400,11 @@ class Advertisement(ValueObject):
     @name.setter
     def name(self, name):
         if isinstance(name, bytearray) or isinstance(name, bytes):
-            self._name = str(name,'ascii')  # TODO: is the name really UTF8 encoded according to the Core spec?
+            try:
+                self._name = str(name, encoding='utf-8')  # UTF-8
+            except UnicodeDecodeError as e:
+                log.error("Received non-UTF-8 name", payload)
+                raise e
         else:
             self._name = str(name)  # unit8
 
