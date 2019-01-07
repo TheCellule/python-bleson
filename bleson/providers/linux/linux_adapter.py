@@ -83,7 +83,7 @@ class BluetoothHCIAdapter(Adapter):
         # Just extract a few parts for now
         device_id = hci_dev_info[0]
         device_name = hci_dev_info[1].split(b'\0',1)[0]
-        bd_address = hci_dev_info[7:1:-1]
+        bd_address = hci_dev_info[2:8]
         return Device(address=BDAddress(bd_address), name=device_name)
 
 
@@ -124,10 +124,10 @@ class BluetoothHCIAdapter(Adapter):
         self.write_buffer(cmd)
 
 
-    def set_scan_enable(self, enabled=False, duplicates=False):
+    def set_scan_enable(self, enabled=False, filter_duplicates=False):
         len = 2
         enable = 0x01 if enabled else 0x00
-        dups   = 0x01 if duplicates else 0x00
+        dups   = 0x01 if filter_duplicates else 0x00
         cmd = struct.pack("<BHBBB", HCI_COMMAND_PKT, LE_SET_SCAN_ENABLE_CMD, len, enable, dups)
         self.write_buffer(cmd)
 
@@ -210,7 +210,7 @@ class BluetoothHCIAdapter(Adapter):
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Parameters Set');
 
-        elif data[5] << 8 + data[4] == LE_SET_SCAN_ENABLE_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_SCAN_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Enable Set')
 
@@ -218,13 +218,13 @@ class BluetoothHCIAdapter(Adapter):
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Parameters Set')
 
-        elif (data[5] << 8 + data[4]) == LE_SET_ADVERTISING_DATA_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_ADVERTISING_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Data Set')
-        elif data[5] << 8 + data[4] == LE_SET_SCAN_RESPONSE_DATA_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_SCAN_RESPONSE_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Response Data Set')
-        elif data[5] << 8 + data[4] == LE_SET_ADVERTISE_ENABLE_CMD:
+        elif (data[5] << 8) + data[4] == LE_SET_ADVERTISE_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertise Enable Set')
 
@@ -232,7 +232,7 @@ class BluetoothHCIAdapter(Adapter):
         log.debug("EVT_DISCONN_COMPLETE")
         disconn_info = dict(
             status=data[3],
-            handle=data[5] << 8 + data[4],
+            handle=(data[5] << 8) + data[4],
             reason=data[6]
         )
         log.debug(disconn_info)
@@ -276,7 +276,7 @@ class BluetoothHCIAdapter(Adapter):
         self.set_scan_enable(False)
         self.set_scan_filter()
         self.set_scan_parameters()
-        self.set_scan_enable(True, True)
+        self.set_scan_enable(True, False)
 
     def stop_scanning(self):
         self.set_scan_enable(False)
