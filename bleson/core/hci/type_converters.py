@@ -189,6 +189,10 @@ class AdvertisingDataConverters(object):
                 advertisement.mfg_data = payload
                 log.debug("Manufacturer Data={}".format(advertisement.mfg_data))
 
+            elif GAP_TX_POWER == gap_type:
+                advertisement.tx_pwr_lvl = payload
+                log.debug("TX Power={}".format(advertisement.tx_pwr_lvl))
+
             else:
                 log.warning("TODO: Unhandled GAP type, pos={} type=0x{:02x} len={}".format(pos, gap_type, length))
                 log.warning(data_info)
