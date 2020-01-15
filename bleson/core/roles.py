@@ -20,7 +20,7 @@ class Observer(Role):
 
     @property
     def on_advertising_data(self):
-        return self.adapter.on_advtising_data
+        return self.adapter.on_advertising_data
 
     @on_advertising_data.setter
     def on_advertising_data(self, cb):
