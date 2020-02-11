@@ -1,4 +1,5 @@
 import struct
+import sys
 
 from bleson.core.hci.constants import *
 from bleson.core.hci.types import HCIPacket, HCIPayload
@@ -190,8 +191,13 @@ class AdvertisingDataConverters(object):
                 log.debug("Manufacturer Data={}".format(advertisement.mfg_data))
 
             elif GAP_TX_POWER == gap_type:
-                advertisement.tx_pwr_lvl = payload
+                if payload == None:
+                    advertisement.tx_pwr_lvl = payload
+                else:
+                    advertisement.tx_pwr_lvl = int.from_bytes(
+                        payload, sys.byteorder)
                 log.debug("TX Power={}".format(advertisement.tx_pwr_lvl))
+
 
             else:
                 log.warning("TODO: Unhandled GAP type, pos={} type=0x{:02x} len={}".format(pos, gap_type, length))
