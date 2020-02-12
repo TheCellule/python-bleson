@@ -1,5 +1,4 @@
 import struct
-import sys
 
 from bleson.core.hci.constants import *
 from bleson.core.hci.types import HCIPacket, HCIPayload
@@ -195,7 +194,7 @@ class AdvertisingDataConverters(object):
                     advertisement.tx_pwr_lvl = payload
                 else:
                     advertisement.tx_pwr_lvl = int.from_bytes(
-                        payload, sys.byteorder)
+                        payload, byteorder='little')
                 log.debug("TX Power={}".format(advertisement.tx_pwr_lvl))
 
 
