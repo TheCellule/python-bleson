@@ -197,6 +197,12 @@ class AdvertisingDataConverters(object):
                         payload, byteorder='little')
                 log.debug("TX Power={}".format(advertisement.tx_pwr_lvl))
 
+            elif GAP_APPEARANCE == gap_type:
+                # https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.gap.appearance.xml
+                # "The external appearance of this device. The values are composed of a category (10-bits) and sub-categories (6-bits)."
+                # TODO: Add Appearance Names as well as IDs likey as "appearance: {id: , description:}"
+                advertisement.appearance = int.from_bytes(payload, byteorder='little')
+                log.debug("GAP Appearance={}".format(advertisement.appearance))
 
             else:
                 log.warning("TODO: Unhandled GAP type, pos={} type=0x{:02x} len={}".format(pos, gap_type, length))
