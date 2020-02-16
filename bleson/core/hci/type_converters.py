@@ -6,21 +6,20 @@ from bleson.core.types import Advertisement, BDAddress, UUID16, UUID128
 from bleson.logger import log
 
 
-
 def hex_string(data):
     return ''.join('{:02x} '.format(x) for x in data)
 
 
 def bytearray_to_hexstring(ba):
     return hex_string(ba)
-    #return binascii.hexlify(ba)
-
+    # return binascii.hexlify(ba)
 
 def hexstring_to_bytearray(hexstr):
     """"
         hexstr:     e.g. "de ad be ef 00"
     """
     return bytearray.fromhex(hexstr)
+
 
 def event_to_string(event_code):
     return HCI_EVENTS[event_code]
@@ -36,10 +35,10 @@ def parse_hci_event_packet(data):
 
 
 def rssi_from_byte(rssi_unsigned):
-    rssi =  rssi_unsigned - 256 if rssi_unsigned > 127 else rssi_unsigned
+    rssi = rssi_unsigned - 256 if rssi_unsigned > 127 else rssi_unsigned
     if rssi == 127:
         rssi = None         # RSSI Not available
-    elif rssi >=20:
+    elif rssi >= 20:
         rssi = None         # Reserverd range 20-126
 
     return rssi
@@ -62,11 +61,13 @@ class AdvertisingDataConverters(object):
             hci_payload.add_item(GAP_FLAGS, [advertisement.flags])
 
         if advertisement.uuid16s:
-            hci_payload.add_item(GAP_UUID_16BIT_COMPLETE, advertisement.uuid16s)
+            hci_payload.add_item(GAP_UUID_16BIT_COMPLETE,
+                                 advertisement.uuid16s)
             # TODO: incompleteuuid16s
 
         if advertisement.uuid128s:
-            hci_payload.add_item(GAP_UUID_128BIT_COMPLETE, advertisement.uuid128s)
+            hci_payload.add_item(GAP_UUID_128BIT_COMPLETE,
+                                 advertisement.uuid128s)
             # TODO: incompleteuuid128s
 
         if advertisement.tx_pwr_lvl:
@@ -74,7 +75,8 @@ class AdvertisingDataConverters(object):
 
         if advertisement.name:
             # TODO: 'incomplete' name
-            hci_payload.add_item(GAP_NAME_COMPLETE, advertisement.name.encode('ascii')) # TODO: check encoding is ok
+            hci_payload.add_item(GAP_NAME_COMPLETE, advertisement.name.encode(
+                'ascii'))  # TODO: check encoding is ok
 
         # TODO: more!!
 
@@ -91,31 +93,35 @@ class AdvertisingDataConverters(object):
         """
 
         if hci_packet.event_code != HCI_LE_META_EVENT and hci_packet.subevent_code != EVT_LE_ADVERTISING_REPORT:
-            raise ValueError("Invalid HCI Advertising Packet {}".format(hci_packet))
+            raise ValueError(
+                "Invalid HCI Advertising Packet {}".format(hci_packet))
 
         return cls.from_hcipayload(hci_packet.data)
 
     @classmethod
     def from_hcipayload(cls, data):
         data_info = "Data: {}".format(hex_string(data))
-        pos_info = "POS : {}".format(''.join('{:02} '.format(x) for x in range(0, len(data))))
+        pos_info = "POS : {}".format(
+            ''.join('{:02} '.format(x) for x in range(0, len(data))))
         log.debug(data_info)
         log.debug(pos_info)
 
         num_reports = data[0]
         log.debug("Num Reports {}".format(num_reports))
 
-        if num_reports !=1:
-            log.error("TODO: Only 1 Advertising report is supported, creating emtpy Advertisement")
+        if num_reports != 1:
+            log.error(
+                "TODO: Only 1 Advertising report is supported, creating emtpy Advertisement")
             # don't make it fatal
             return Advertisement()
 
         # TODO: move these 2 LUTs to a better place
-        gap_adv_type = ['ADV_IND', 'ADV_DIRECT_IND', 'ADV_SCAN_IND', 'ADV_NONCONN_IND', 'SCAN_RSP'][data[1]]
-        gap_addr_type = ['PUBLIC', 'RANDOM', 'PUBLIC_IDENTITY', 'RANDOM_STATIC'][data[2]]
+        gap_adv_type = ['ADV_IND', 'ADV_DIRECT_IND',
+                        'ADV_SCAN_IND', 'ADV_NONCONN_IND', 'SCAN_RSP'][data[1]]
+        gap_addr_type = ['PUBLIC', 'RANDOM',
+                         'PUBLIC_IDENTITY', 'RANDOM_STATIC'][data[2]]
         gap_addr = data[3:9]
         rssi = rssi_from_byte(data[-1])
-
 
         advertisement = Advertisement(address=BDAddress(gap_addr), rssi=rssi)
         advertisement.type = gap_adv_type
@@ -127,7 +133,8 @@ class AdvertisingDataConverters(object):
             length = data[pos]
             gap_type = data[pos+1]
             payload = data[pos+2:pos+2+length-1]
-            log.debug("Pos={} Type=0x{:02x} Len={} Payload={}".format(pos, gap_type, length, hex_string(payload)))
+            log.debug("Pos={} Type=0x{:02x} Len={} Payload={}".format(
+                pos, gap_type, length, hex_string(payload)))
 
             if GAP_FLAGS == gap_type:
                 advertisement.flags = payload[0]
@@ -136,8 +143,9 @@ class AdvertisingDataConverters(object):
             elif GAP_UUID_16BIT_COMPLETE == gap_type:
                 uuids = []
                 byte_pos = 0
-                if len(payload) % 2 !=0:
-                    raise ValueError("PAyload is not divisible by 2 for UUID16")
+                if len(payload) % 2 != 0:
+                    raise ValueError(
+                        "PAyload is not divisible by 2 for UUID16")
 
                 while byte_pos < len(payload):
                     log.debug('byte_pos={}'.format(byte_pos))
@@ -147,17 +155,18 @@ class AdvertisingDataConverters(object):
                     uuids.append(uuid)
                     byte_pos += 2
 
-                advertisement.uuid16s=uuids
+                advertisement.uuid16s = uuids
 
             elif GAP_UUID_128BIT_COMPLETE == gap_type:
 
                 # if length-1 > 16:
                 #     log.warning("TODO: >1 UUID128's found, not yet split into individual elements")
-                #advertisement.uuid128s=[UUID128(payload)]
+                # advertisement.uuid128s=[UUID128(payload)]
                 uuids = []
                 byte_pos = 0
-                if len(payload) % 16 !=0:
-                    raise ValueError("Payload is not divisible by 16 for UUID128")
+                if len(payload) % 16 != 0:
+                    raise ValueError(
+                        "Payload is not divisible by 16 for UUID128")
 
                 while byte_pos < len(payload):
                     log.debug('byte_pos={}'.format(byte_pos))
@@ -167,7 +176,7 @@ class AdvertisingDataConverters(object):
                     uuids.append(uuid)
                     byte_pos += 16
 
-                advertisement.uuid128s=uuids
+                advertisement.uuid128s = uuids
 
                 log.debug(advertisement.uuid128s)
 
@@ -187,7 +196,8 @@ class AdvertisingDataConverters(object):
 
             elif GAP_MFG_DATA == gap_type:
                 advertisement.mfg_data = payload
-                log.debug("Manufacturer Data={}".format(advertisement.mfg_data))
+                log.debug("Manufacturer Data={}".format(
+                    advertisement.mfg_data))
 
             elif GAP_TX_POWER == gap_type:
                 if payload == None:
@@ -197,22 +207,51 @@ class AdvertisingDataConverters(object):
                         payload, byteorder='little')
                 log.debug("TX Power={}".format(advertisement.tx_pwr_lvl))
 
+            elif GAP_SLAVE_CONNECTION_INTERVAL_RANGE == gap_type:
+                # Supplement to Bluetooth Core Specification | CSS v9, Part A
+                # 1.9 SLAVE CONNECTION INTERVAL RANGE
+                #
+                # The GAP_SLAVE_CONNECTION_INTERVAL_RANGE is 4 bytes
+                # The first two are the min, the seond 2 the max interval
+                # These values are then multiplied by 1.25ms to get a connection
+                # interval range
+                # 0xFFFF indicates there is no specified value
+
+                if payload[:2] == b'0xFFFF':
+                    min_interval = None
+                else:
+                    min_interval = (int.from_bytes(
+                        payload[:2], byteorder='little') * 1.25)
+
+                if payload[2:] == b'0xFFFF':
+                    max_interval = None
+                else:
+                    max_interval = (int.from_bytes(
+                        payload[2:], byteorder='little') * 1.25)
+                advertisement.slave_connection_interval_range = {
+                    'min': min_interval,
+                    'max': max_interval
+                }
+                log.debug("Slave Conection Interval Range={}".format(
+                    advertisement.slave_connection_interval_range))
+
             elif GAP_APPEARANCE == gap_type:
                 # https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Characteristics/org.bluetooth.characteristic.gap.appearance.xml
-                # "The external appearance of this device. The values are composed of a category (10-bits) and sub-categories (6-bits)."
-                # TODO: Add Appearance Names as well as IDs likey as "appearance: {id: , description:}"
-                advertisement.appearance = int.from_bytes(payload, byteorder='little')
+                # "The external appearance of this device. The values are
+                # composed of a category (10-bits) and sub-categories (6-bits)."
+                # TODO: Add Appearance Names as well as IDs likey as
+                # "appearance: {id: , description:}"
+                advertisement.appearance = int.from_bytes(
+                    payload, byteorder='little')
                 log.debug("GAP Appearance={}".format(advertisement.appearance))
 
             else:
-                log.warning("TODO: Unhandled GAP type, pos={} type=0x{:02x} len={}".format(pos, gap_type, length))
+                log.warning("TODO: Unhandled GAP type, pos={} type=0x{:02x} len={}".format(
+                    pos, gap_type, length))
                 log.warning(data_info)
                 log.warning(pos_info)
 
-            pos += length +1
-
+            pos += length + 1
 
         log.debug(advertisement)
         return advertisement
-
-
