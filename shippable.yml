@@ -14,8 +14,15 @@ env:
 #- secure: WX61S0VNEoYK47mCFaiWUwYlxVvN+XbLu2Snamd9rsK6vlzXxI1RoiGXa7Ly1nco0wZEulYfRBtlQxQLCQcAzUgkqL/d+dUIMPILeym09Dlilk73V3Aivm50kRIlZ98CBheVPDJRNznXCzwyaob1AUB0l4cZmG4DEeRGIMMXbRAaPYNntuVakksPbZQ/NBV9RrGTTQ14ppIAAQyt8rRSEzfhWX57Nli0JSX/0MdWOfDggE3s/1amT6iC8SqWRZFLzwdDf2xPb7YVHvUo8fZgw2Y2Tn013nsSLpbRQ1CtoOI241TUw/cOV8QnYuSwEytXDTIr1fBDFtBhrN9lh2R0+g==
 
 build:
+  pre_ci_boot:
+    image_name: brewblox/bluetooth-demo
+    image_tag: latest
+    pull: true
+    env: FOO=bar
+    options: "-e HOME=/root"
+
   ci:
-    - sudo find /
+    - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
 #    - sudo apt-get update
