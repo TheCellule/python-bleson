@@ -23,6 +23,7 @@ build:
     privileged: true
 
   ci:
+    - lsmod
     - ls /lib/modules
     - uname -r
     - apt search linux-headers-$(uname -r)
