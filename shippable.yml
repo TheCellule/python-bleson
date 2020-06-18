@@ -11,6 +11,7 @@ env:
 
 
 build:
+  # Custom docker image:
 #  pre_ci_boot:
 #    image_name: bleson_docker_repo/linux
 #    image_tag: latest
@@ -18,19 +19,16 @@ build:
 #    env: FOO=bar
 #    options: "-e HOME=/root"
   ci:
-    - echo $TWINE_USERNAME
-    - echo $TWINE_REPOSITORY_URL
-#    - sudo apt-get install bluez-test-tools
-#    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
-#    - tar xf bluez-5.43.tar.xz
-#    - cd bluez-5.43/
-#    - sudo apt-get build-dep bluez
-#    - sudo apt-get install libical-dev
-#    - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
-#    - make -j4
-#    - btvirt -l2 &
-#    - btmgmt info
-    - ls /usr/bin
+    - sudo apt-get install bluez-test-tools
+    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
+    - tar xf bluez-5.43.tar.xz
+    - cd bluez-5.43/
+    - sudo apt-get build-dep bluez
+    - sudo apt-get install libical-dev
+    - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
+    - make -j4
+    - btvirt -l2 &
+    - btmgmt info
     - python -m pip install setuptools twine
     - python setup.py clean build sdist publish
 
