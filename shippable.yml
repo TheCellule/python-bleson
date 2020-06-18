@@ -20,6 +20,9 @@ build:
 #    env: FOO=bar
 #    options: "-e HOME=/root"
   ci:
+    - echo $TWINE_USERNAME
+    - echo $TWINE_REPOSITORY_URL
+    - echo $TWINE_PASSWORD
 #    - sudo apt-get install bluez-test-tools
 #    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
 #    - tar xf bluez-5.43.tar.xz
