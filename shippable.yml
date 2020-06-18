@@ -37,8 +37,8 @@ build:
 #    - sudo apt-get build-dep bluez
 #    - sudo apt-get install libical-dev
     - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.54.tar.xz
-    - tar xf bluez-5.43.tar.xz
-    - cd bluez-5.43/
+    - tar xf bluez-*.tar.xz
+    - cd bluez-*/
     - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --enable-testing --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
     - make -j4
     - sudo ./emulator/btvirt -l2 &
