@@ -1,5 +1,5 @@
 import sys
-
+from os import environ
 from bleson.logger import log
 
 _provider = None
@@ -10,13 +10,15 @@ def get_provider():
     global _provider
 
     if _provider is None:
-        if sys.platform.startswith('linux'):
+        if environ.get("BLESON_PROVIDER") == "stub":
+            from bleson.providers.stub.stub_provider import StubProvider
+            _provider = StubProvider()
+        elif sys.platform.startswith('linux'):
             from bleson.providers.linux.linux_provider import LinuxProvider
             _provider = LinuxProvider()
         elif sys.platform.startswith('darwin'):
             from bleson.providers.macos.macos_provider import MacOSProvider
             _provider = MacOSProvider()
-
         elif sys.platform.startswith('win32'):
             from bleson.providers.win32.win32_provider import Win32Provider
             _provider = Win32Provider()
