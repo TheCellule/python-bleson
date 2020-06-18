@@ -19,6 +19,6 @@ build:
 #    - btvirt -l2 &
 #    - btmgmt info
     - ls /usr/bin
-    - pip3 install setuptools twine
-    - python3 setup.py clean build sdist #publish
+    - python -m pip install setuptools twine
+    - python setup.py clean build sdist #publish
 
