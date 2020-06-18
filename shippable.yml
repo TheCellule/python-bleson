@@ -15,7 +15,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: homeassistant/raspberrypi4-homeassistant
+    image_name: balenalib/intel-edison-debian-golang
     image_tag: latest
     pull: true
     env: FOO=bar
