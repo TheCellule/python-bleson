@@ -4,7 +4,7 @@ python:
   #- 3.7
 branches:
   only:
-    - RELEASE_*
+    - docker_ci
 
 env:
 # Prod PyPi
@@ -28,5 +28,5 @@ build:
 #    - sudo ./emulator/btvirt -l2 &
 #    - sudo ./tools/btmgmt info
     - python -m pip install setuptools twine
-    - python setup.py clean build test sdist publish
+    - python setup.py clean build # test sdist publish
 
