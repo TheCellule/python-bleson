@@ -8,9 +8,9 @@ branches:
 
 env:
 # Prod PyPi
-#  - secure: ZgxJht+Id3jYnuGxMFgwn+FMjXsinHcjzX2dVncDZTq6OyFceI3c7qW3v1RAltCNKxEnFnupGpGvXqb6rzPfAbhwZzMdwV/wInESfupFBUIFZYfzIIS4FxzPg8yduVAhTag0Knak+zgzyGEL8KRwxM6lEX2HEwjcTGLhYK+Dr4/CJm4EylNXOJN5GiBul0d8ldTDdg9jpMlIU1oqd5X2kTYupDeuPV2xNH5hImHgj5VU3efWzxThlRCW51PON2nBehAWRsGjwXx/+KUDWEqWU2r6hoAHBghVPHqaO5a2ge6L1QzT1QgJByRtV6EkB6937N/qqYfjeNGBOIqC94iAeg==
+  - secure: ZgxJht+Id3jYnuGxMFgwn+FMjXsinHcjzX2dVncDZTq6OyFceI3c7qW3v1RAltCNKxEnFnupGpGvXqb6rzPfAbhwZzMdwV/wInESfupFBUIFZYfzIIS4FxzPg8yduVAhTag0Knak+zgzyGEL8KRwxM6lEX2HEwjcTGLhYK+Dr4/CJm4EylNXOJN5GiBul0d8ldTDdg9jpMlIU1oqd5X2kTYupDeuPV2xNH5hImHgj5VU3efWzxThlRCW51PON2nBehAWRsGjwXx/+KUDWEqWU2r6hoAHBghVPHqaO5a2ge6L1QzT1QgJByRtV6EkB6937N/qqYfjeNGBOIqC94iAeg==
 # Test PyPi
-  - secure: O1B2gI/giE9l7JYq9DoGVDgQvk1rE149dHIjdOXi4tYmTdVUIH0kNbdMsxuIAWwNoPPjsR+ntdE7lwkrHCXCbsKiQQXmPvEYpw3bADn/WbedrmfywlHR0yEGpqZv6IvSFdfS9wBqb4f/pAy7wt6BlGcRT0cPTT5h4E3HI7yYUJRVtXEDFbGgx2+wLPs6SnxAgwRT1xksPbH/ck+XHK1vFw8A8yO+HgMAfc+/BWYYSUhHks9ouJ8PAAje5XfXg1G9AP46X8hSkewwVfBgZ4S64bPsRfrRGwIbdqslSTWWG/1oB+E3XtU6OfqnrkxgRnQ+T/s/Dlx9AIRfJ253Yv2SXw==
+#  - secure: O1B2gI/giE9l7JYq9DoGVDgQvk1rE149dHIjdOXi4tYmTdVUIH0kNbdMsxuIAWwNoPPjsR+ntdE7lwkrHCXCbsKiQQXmPvEYpw3bADn/WbedrmfywlHR0yEGpqZv6IvSFdfS9wBqb4f/pAy7wt6BlGcRT0cPTT5h4E3HI7yYUJRVtXEDFbGgx2+wLPs6SnxAgwRT1xksPbH/ck+XHK1vFw8A8yO+HgMAfc+/BWYYSUhHks9ouJ8PAAje5XfXg1G9AP46X8hSkewwVfBgZ4S64bPsRfrRGwIbdqslSTWWG/1oB+E3XtU6OfqnrkxgRnQ+T/s/Dlx9AIRfJ253Yv2SXw==
 
 build:
   ci:
@@ -27,5 +27,5 @@ build:
 #    - sudo ./emulator/btvirt -l2 &
 #    - sudo ./tools/btmgmt info
     - python -m pip install setuptools twine
-    - python setup.py clean build sdist publish
+    - python setup.py clean build test sdist publish
 
