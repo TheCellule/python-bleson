@@ -7,6 +7,8 @@ branches:
 
 build:
   ci:
-    - sudo apt-get install btvirt
+    - sudo apt-get install bluez-test-tools
+    - btvirt -l2 &
+    - btmgmt info
     - python3 setup.py clean build sdist publish
 
