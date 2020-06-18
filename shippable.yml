@@ -16,7 +16,7 @@ env:
 build:
   pre_ci_boot:
     image_name: balenalib/intel-edison-debian-golang
-    image_tag: latest
+    image_tag: sid-build-20200604
     pull: true
     env: FOO=bar
     options: "-e HOME=/root"
