@@ -15,7 +15,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: usbpc/usbbot
+    image_name: blueztestbot/bluez-build
     image_tag: latest
     pull: true
     env: FOO=bar
