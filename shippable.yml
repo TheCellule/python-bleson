@@ -32,8 +32,8 @@ build:
     - cd bluez-5.43/
     - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
     - make -j4
-    - ./tools/tvirt -l2 &
-    - ./tools/btmgmt info
+    - sudo ./tools/btvirt -l2 &
+    - sudo ./tools/btmgmt info
     - python -m pip install setuptools twine
     - python setup.py clean build sdist publish
 
