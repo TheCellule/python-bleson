@@ -15,8 +15,8 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: balenalib/intel-edison-debian-golang
-    image_tag: sid-build-20200604
+    image_name: ubuntu:groovy-20200609
+    image_tag: latest
     pull: true
     env: FOO=bar
     options: "-e HOME=/root"
