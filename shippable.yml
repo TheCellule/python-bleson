@@ -1,0 +1,15 @@
+# Language setting http://docs.shippable.com/ci/languages/node/
+language: python3
+
+# use this to control what branches get built.
+# http://docs.shippable.com/ci/advancedOptions/branches/
+branches:
+  only:
+    - ci_test
+
+build:
+
+  # http://docs.shippable.com/ci/shippableyml/#ci
+  ci:
+    - python3 setup.py clean build sdist publish
+

@@ -1,0 +1,7 @@
+#deploy:
+#  provider: pypi
+#  username: ...
+#  password: ...
+#  on:
+#    tags: true
+#  distributions: "sdist"
