@@ -4,7 +4,7 @@ python:
   #- 3.7
 branches:
   only:
-    - ci_test
+    - RELEASE_*
 
 env:
 # Prod PyPi
@@ -17,7 +17,8 @@ build:
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
 #    - sudo apt-get update
-#    - sudo apt-get build-dep bluez libical-dev
+#    - sudo apt-get build-dep bluez
+#    - sudo apt-get install libical-dev
 #    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
 #    - tar xf bluez-5.43.tar.xz
 #    - cd bluez-5.43/
