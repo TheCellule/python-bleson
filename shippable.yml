@@ -7,8 +7,14 @@ branches:
     - ci_test
 
 build:
+#  pre_ci_boot:
+#    image_name: bleson_docker_repo/linux
+#    image_tag: latest
+#    pull: true
+#    env: FOO=bar
+#    options: "-e HOME=/root"
   ci:
-    #- sudo apt-get install bluez-test-tools
+#    - sudo apt-get install bluez-test-tools
 #    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
 #    - tar xf bluez-5.43.tar.xz
 #    - cd bluez-5.43/
@@ -20,5 +26,5 @@ build:
 #    - btmgmt info
     - ls /usr/bin
     - python -m pip install setuptools twine
-    - python setup.py clean build sdist #publish
+    - python setup.py clean build sdist publish
 
