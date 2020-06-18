@@ -15,7 +15,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: ubuntu:groovy-20200609
+    image_name: ubuntu:groovy
     image_tag: latest
     pull: true
     env: FOO=bar
