@@ -15,7 +15,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: homeassistant/raspberrypi3-homeassistant
+    image_name: homeassistant/raspberrypi4-homeassistant
     image_tag: latest
     pull: true
     env: FOO=bar
