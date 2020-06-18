@@ -56,7 +56,7 @@ Advertise the host as a Bluetooth LE device with the name `bleson`
 Peripheral example
 ------------------
 
-Create a simple Peripheral
+Create a simple Peripheral. (This currently only works on the micro:bit port.)
 
     .. testcode:: Peripheral_LED
 
