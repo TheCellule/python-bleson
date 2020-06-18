@@ -13,27 +13,19 @@ env:
   - secure: O1B2gI/giE9l7JYq9DoGVDgQvk1rE149dHIjdOXi4tYmTdVUIH0kNbdMsxuIAWwNoPPjsR+ntdE7lwkrHCXCbsKiQQXmPvEYpw3bADn/WbedrmfywlHR0yEGpqZv6IvSFdfS9wBqb4f/pAy7wt6BlGcRT0cPTT5h4E3HI7yYUJRVtXEDFbGgx2+wLPs6SnxAgwRT1xksPbH/ck+XHK1vFw8A8yO+HgMAfc+/BWYYSUhHks9ouJ8PAAje5XfXg1G9AP46X8hSkewwVfBgZ4S64bPsRfrRGwIbdqslSTWWG/1oB+E3XtU6OfqnrkxgRnQ+T/s/Dlx9AIRfJ253Yv2SXw==
 
 build:
-  # Custom docker image:
-#  pre_ci_boot:
-#    image_name: bleson_docker_repo/linux
-#    image_tag: latest
-#    pull: true
-#    env: FOO=bar
-#    options: "-e HOME=/root"
   ci:
-#    - sudo apt-get install bluez-test-tools
-    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
-    - cat /etc/apt/sources.list
-    - sudo apt-get update
-    - sudo apt-get build-dep bluez
-    - sudo apt-get install libical-dev
-    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
-    - tar xf bluez-5.43.tar.xz
-    - cd bluez-5.43/
-    - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --enable-testing --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
-    - make -j4
-    - sudo ./emulator/btvirt -l2 &
-    - sudo ./tools/btmgmt info
+#    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
+#    - cat /etc/apt/sources.list
+#    - sudo apt-get update
+#    - sudo apt-get build-dep bluez
+#    - sudo apt-get install libical-dev
+#    - wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
+#    - tar xf bluez-5.43.tar.xz
+#    - cd bluez-5.43/
+#    - ./configure  --prefix=$PWD/built --enable-experimental  --enable-maintainer-mode --enable-testing --with-systemdsystemunitdir=/lib/systemd/system --with-systemduserunitdir=/usr/lib/systemd
+#    - make -j4
+#    - sudo ./emulator/btvirt -l2 &
+#    - sudo ./tools/btmgmt info
     - python -m pip install setuptools twine
     - python setup.py clean build test sdist publish
 
