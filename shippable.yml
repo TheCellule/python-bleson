@@ -20,9 +20,10 @@ build:
     pull: true
     env: FOO=bar
     options: "-e HOME=/root"
+    privileged: true
 
   ci:
-    - sudo apt-get install linux-modules-4.15.0-1028
+    - sudo apt-get install linux-modules-4.15.0
     - sudo depmod
     - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
