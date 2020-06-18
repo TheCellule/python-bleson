@@ -24,12 +24,12 @@ build:
 
   ci:
     - lsmod
-    - ls /lib/modules
-    - uname -r
-    - apt search linux-headers-$(uname -r)
-    - apt search linux-modules-$(uname -r)
-    - sudo apt-get install linux-modules-$(uname -r)
-    - sudo depmod
+#    - ls /lib/modules
+#    - uname -r
+#    - apt search linux-headers-$(uname -r)
+#    - apt search linux-modules-$(uname -r)
+#    - sudo apt-get install linux-modules-$(uname -r)
+#    - sudo depmod
     - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
