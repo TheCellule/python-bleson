@@ -16,7 +16,7 @@ env:
 build:
   pre_ci_boot:
     image_name: brewblox/bluetooth-demo
-    image_tag: latest
+    image_tag: develop
     pull: true
     env: FOO=bar
     options: "-e HOME=/root"
