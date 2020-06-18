@@ -22,6 +22,7 @@ build:
     options: "-e HOME=/root"
 
   ci:
+    - sudo depmod
     - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
