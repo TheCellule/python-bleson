@@ -15,8 +15,8 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: brewblox/bluetooth-demo
-    image_tag: develop
+    image_name: homeassistant/raspberrypi3-homeassistant
+    image_tag: latest
     pull: true
     env: FOO=bar
     options: "-e HOME=/root"
