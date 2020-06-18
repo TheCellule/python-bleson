@@ -20,6 +20,8 @@ build:
 #    options: "-e HOME=/root"
   ci:
 #    - sudo apt-get install bluez-test-tools
+    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
+    - cat /etc/apt/sources.list
     - sudo apt-get update
     - sudo apt-get build-dep bluez
     - sudo apt-get install libical-dev
