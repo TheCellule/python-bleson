@@ -22,7 +22,7 @@ build:
     options: "-e HOME=/root"
 
   ci:
-    - sudo apt install linux-modules-4.15.0-1028-gcp
+    - sudo apt-get install linux-modules-4.15.0-1028
     - sudo depmod
     - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
