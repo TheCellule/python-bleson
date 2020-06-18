@@ -15,7 +15,7 @@ env:
 
 build:
   pre_ci_boot:
-    image_name: ubuntu
+    image_name: kvaps/bluez-a2dp
     image_tag: latest
     pull: true
     env: FOO=bar
