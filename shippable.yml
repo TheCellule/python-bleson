@@ -6,6 +6,12 @@ branches:
   only:
     - ci_test
 
+env:
+  - TWINE_USERNAME=TheCellule
+  - TWINE_REPOSITORY_URL https://test.pypi.org/legacy/
+  - secure: PQTlegWWIlZU9uwTT1BuZWyTjwBjCdl2hLSLa+6+zhuGRRAKIa3/5FfQje45EAA0X85YO7Uht9OfIYvcd/gmdR3kRx3vUmIgglROgyTS3oazif8jSdXXlWx7n1aaooDehusxbcjelQrPoSNT84iDgD1ZYW56XiRq6nFcr6smGXHoTcUDtwxzUDAKKImXKTBnX2sT6lQ1LvjeYuZLffRwVrsRQK3sxeN4w1fKzxzsipAjpdGU3ZVssufAMAIon8xUtZSAEbRUY7KgjPw/axXQvvfwZYfIm1gySteKlsAn2D/K0M/HzQTM15S4QPQDABW/GYBCTnCfLGsEI1dDmA0J2g==
+
+
 build:
 #  pre_ci_boot:
 #    image_name: bleson_docker_repo/linux
