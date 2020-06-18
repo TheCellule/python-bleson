@@ -36,8 +36,8 @@ class TestDualAdapters(unittest.TestCase):
 
     def test_observer_advertiser_pair(self):
 
-        if not sys.platform.lower().startswith('linux'):
-            raise unittest.SkipTest("Dual adapter tests only run on Linux")
+        # if not sys.platform.lower().startswith('linux'):
+        #     raise unittest.SkipTest("Dual adapter tests only run on Linux")
 
         # ----------------------------------------
         # Setup the Observer, on adatper 0
@@ -95,8 +95,8 @@ class TestDualAdapters(unittest.TestCase):
 
     def test_observer_beacon_pair(self):
 
-        if not sys.platform.lower().startswith('linux'):
-            raise unittest.SkipTest("Dual adapter tests only run on Linux")
+        # if not sys.platform.lower().startswith('linux'):
+        #     raise unittest.SkipTest("Dual adapter tests only run on Linux")
 
         observer = Observer(self.adapter0)
         found_addresses = set()
