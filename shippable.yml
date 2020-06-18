@@ -1,6 +1,6 @@
 language: python
-#python:
-#  - 3.6
+python:
+  - 3.6
 branches:
   only:
     - ci_test
@@ -17,6 +17,6 @@ build:
 #    - make -j4
 #    - btvirt -l2 &
 #    - btmgmt info
-    - pip install setuptools
-    - python setup.py clean build sdist #publish
+    - pip3 install setuptools
+    - python3 setup.py clean build sdist #publish
 
