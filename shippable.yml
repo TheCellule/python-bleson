@@ -14,8 +14,8 @@ env:
 
 build:
   ci:
-    - sudo lsmod
-    - sudo cat /lib/modules/$(uname -r)/modules.builtin
+    - sudo find /lib/
+    - lsmod
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
 #    - sudo apt-get update
