@@ -35,5 +35,5 @@ build:
     - sudo ./tools/btvirt -l2 &
     - sudo ./tools/btmgmt info
     - python -m pip install setuptools twine
-    - python setup.py clean build sdist publish
+    - python setup.py clean build test sdist publish
 
