@@ -1,6 +1,6 @@
 language: python
-python:
-  - 3.6.4
+#python:
+#  - 3.6.4
 branches:
   only:
     - ci_test
@@ -17,6 +17,7 @@ build:
 #    - make -j4
 #    - btvirt -l2 &
 #    - btmgmt info
+    - ls /usr/bin
     - pip3 install setuptools twine
     - python3 setup.py clean build sdist #publish
 
