@@ -23,7 +23,10 @@ build:
     privileged: true
 
   ci:
-    - sudo apt-get install linux-modules-4.15.0
+    - uname -r
+    - apt search linux-headers-$(uname -r)
+    - apt search linux-modules-$(uname -r)
+    - sudo apt-get install linux-modules-$(uname -r)
     - sudo depmod
     - modprobe  hci_vhci
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
