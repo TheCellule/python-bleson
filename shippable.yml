@@ -15,7 +15,6 @@ env:
 
 build:
   ci:
-    - sudo modprobe hci_vhci
     - sudo find /
 #    - sudo sed -i -- 's/#\s*deb-src/deb-src/g' /etc/apt/sources.list
 #    - cat /etc/apt/sources.list
