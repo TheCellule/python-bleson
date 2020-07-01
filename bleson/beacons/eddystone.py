@@ -5,10 +5,10 @@ from bleson.logger import log
 
 
 class EddystoneBeacon(Advertiser):
-    """ PyhsicalWeb (Eddystone) Beaon Advertiser
+    """ PhysicalWeb (Eddystone) Beacon Advertiser
 
         :param adapter: bluetooth adapter
-        :param url: URL to publish, maximu length of 17
+        :param url: URL to publish, maximum length of 17
         :type adapter: :class:`bleson.interfaces.adapter.Adapter`
         :type url: str
 
@@ -122,5 +122,3 @@ class EddystoneBeacon(Advertiser):
         message += encodedurl
 
         return bytearray(message)
-
-
