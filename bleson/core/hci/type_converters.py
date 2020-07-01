@@ -12,7 +12,6 @@ def hex_string(data):
 
 def bytearray_to_hexstring(ba):
     return hex_string(ba)
-    # return binascii.hexlify(ba)
 
 
 def hexstring_to_bytearray(hexstr):
@@ -42,7 +41,7 @@ def rssi_from_byte(rssi_unsigned):
     if rssi == 127:
         rssi = None  # RSSI Not available
     elif rssi >= 20:
-        rssi = None  # Reserverd range 20-126
+        rssi = None  # Reserved range 20-126
 
     return rssi
 
@@ -115,7 +114,7 @@ class AdvertisingDataConverters(object):
 
         if num_reports != 1:
             log.error(
-                "TODO: Only 1 Advertising report is supported, creating emtpy Advertisement"
+                "TODO: Only 1 Advertising report is supported, creating empty Advertisement"
             )
             # don't make it fatal
             return Advertisement()
