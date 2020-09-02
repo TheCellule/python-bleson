@@ -37,21 +37,22 @@ Advertise the host as a Bluetooth LE device with the name `bleson`
 
     .. testcode:: Advertiser
 
-    from time import sleep
+        from time import sleep
 
-    from bleson import get_provider, Advertiser, Advertisement
+        from bleson import get_provider, Advertiser, Advertisement
 
-    adapter = get_provider().get_adapter()
+        adapter = get_provider().get_adapter()
 
-    advertiser = Advertiser(adapter)
-    advertisement = Advertisement()
-    advertisement.name = "bleson"
+        advertiser = Advertiser(adapter)
+        advertisement = Advertisement()
+        advertisement.name = "bleson"
 
-    advertiser.advertisement = advertisement
+        advertiser.advertisement = advertisement
 
-    advertiser.start()
-    sleep(10)
-    advertiser.stop()
+        advertiser.start()
+        sleep(10)
+        advertiser.stop()
+
 
 Peripheral example
 ------------------
