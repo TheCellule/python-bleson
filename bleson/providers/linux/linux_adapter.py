@@ -255,7 +255,7 @@ class BluetoothHCIAdapter(Adapter):
         log.debug("Socket data: len={}, data={}".format(len(data), hex_string(data)))
 
         if data[0] == HCI_EVENT_PKT:
-            hci_event_packet = parse_hci_event_packet(data[1:-1])
+            hci_event_packet = parse_hci_event_packet(data[1:])
             log.debug(hci_event_packet)
 
             if data[1] == EVT_CMD_COMPLETE:
