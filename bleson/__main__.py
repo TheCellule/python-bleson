@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from time import sleep
-from signal import pause
 import argparse
 from bleson import get_provider, Observer, EddystoneBeacon
 from bleson.logger import DEBUG, set_level
@@ -11,7 +10,8 @@ def run_observer():
 
 def run_beacon(url):
     with EddystoneBeacon(get_provider().get_adapter(), url):
-        pause()
+        while True:
+            sleep(1)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--debug", action="store_true", help="enable debug")
