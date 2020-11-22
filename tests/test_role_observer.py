@@ -33,6 +33,7 @@ class TestRoles(unittest.TestCase):
         observer = Observer(self.adapter)
 
         def advertisement_update(advertisement):
+            print("Advertisement.raw_data= {}".format(advertisement.raw_data))
             if sys.platform.lower().startswith('darwin'):
                 found_devices.add(advertisement.name)
             else:

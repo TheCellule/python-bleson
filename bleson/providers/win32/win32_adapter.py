@@ -68,6 +68,7 @@ class BluetoothAdapter(Adapter):
                 advertisement = Advertisement()
                 advertisement.flags = 0
                 advertisement.rssi = data['RSSI']
+                advertisement.raw_data = data
 
                 if 'ADDRESS' in data:
                     advertisement.address = BDAddress(data['ADDRESS'])
