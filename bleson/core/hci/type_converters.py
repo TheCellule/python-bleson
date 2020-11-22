@@ -133,7 +133,7 @@ class AdvertisingDataConverters(object):
         gap_addr = data[3:9]
         rssi = rssi_from_byte(data[-1])
 
-        advertisement = Advertisement(address=BDAddress(gap_addr), rssi=rssi)
+        advertisement = Advertisement(address=BDAddress(gap_addr), rssi=rssi, raw_data=data)
         advertisement.type = gap_adv_type
         advertisement.address_type = gap_addr_type
 

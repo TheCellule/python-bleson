@@ -340,7 +340,7 @@ class Advertisement(ValueObject):
        :type name: str
        :type rssi: integer
        :type tx_power: integer
-       :type raw_data: bytearray
+       :type raw_data: bytearray on Linux (HCI data) or a dictionary on macOS/Win
 
        .. testsetup:: *
 

@@ -180,6 +180,7 @@ class CoreBluetoothAdapter(Adapter, metaclass=Singleton):
                 advertisement.flags = 0                  # Not available
                 advertisement.name = peripheral.name()
                 advertisement.rssi = rssi
+                advertisement.raw_data = data
 
                 if 'kCBAdvDataTxPowerLevel' in data:
                     advertisement.tx_pwr_lvl = int(data['kCBAdvDataTxPowerLevel'])
