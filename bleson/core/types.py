@@ -401,10 +401,10 @@ class Advertisement(ValueObject):
     def name(self, name):
         if isinstance(name, bytearray) or isinstance(name, bytes):
             try:
-                self._name = str(name, encoding='utf-8')  # UTF-8
+                self._name = str(name, encoding='utf-8')  # UTF-8 (BLE core spec)
             except UnicodeDecodeError as e:
-                log.error("Received non-UTF-8 name", payload)
-                raise e
+                log.warning("Name is not a valid UTF-8 string")
+                self._name = name   # make the invalid name available still
         else:
             self._name = str(name)  # unit8
 

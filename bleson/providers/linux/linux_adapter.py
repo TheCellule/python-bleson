@@ -56,7 +56,10 @@ class BluetoothHCIAdapter(Adapter):
     def _socket_poller(self):
         while self._keep_running:
             data = self._socket.recv(1024)         # blocking
-            self._on_data(data)
+            try:
+                self._on_data(data)
+            except Exception:
+                log.exception("Exception ignored in HCISocketPoller")
 
     # Adapter INfo
 
