@@ -101,6 +101,32 @@ class AdvertisingDataConverters(object):
         return cls.from_hcipayload(hci_packet.data)
 
     @classmethod
+    def from_extended_hcipacket(cls, hci_packet: HCIPacket):
+        """
+            uint16_t	evt_type;
+            uint8_t		bdaddr_type;
+            bdaddr_t	bdaddr;
+            uint8_t		primary_phy;
+            uint8_t		secondary_phy;
+            uint8_t		advertising_sid;
+            int8_t		tx_power;
+            int8_t		rssi;
+            uint16_t	periodic_advertising_interval;
+            uint8_t		direct_address_type;
+            bdaddr_t	direct_address;
+            uint8_t		length;
+            uint8_t		data[0];
+        """
+
+        if (
+            hci_packet.event_code != HCI_LE_META_EVENT
+            and hci_packet.subevent_code != EVT_LE_EXTENDED_ADVERTISING_REPORT
+        ):
+            raise ValueError("Invalid HCI Extended Advertising Packet {}".format(hci_packet))
+
+        return cls.from_extended_hcipayload(hci_packet.data)
+
+    @classmethod
     def from_hcipayload(cls, data):
         data_info = "Data: {}".format(hex_string(data))
         pos_info = "POS : {}".format(
@@ -137,8 +163,112 @@ class AdvertisingDataConverters(object):
         advertisement.type = gap_adv_type
         advertisement.address_type = gap_addr_type
 
-        pos = 10
-        while pos < len(data) - 1:
+        return AdvertisingDataConverters.parse_advertisement_data(
+                advertisement, 10, len(data)-11)
+
+    @classmethod
+    def from_extended_hcipayload(cls, data):
+        data_info = "Data: {}".format(hex_string(data))
+        pos_info = "POS : {}".format(
+            "".join("{:02} ".format(x) for x in range(0, len(data)))
+        )
+        log.debug(data_info)
+        log.debug(pos_info)
+
+        num_reports = data[0]
+        log.debug("Num Reports {}".format(num_reports))
+
+        if num_reports != 1:
+            log.error(
+                "TODO: Only 1 Advertising report is supported, creating empty Advertisement"
+            )
+            # don't make it fatal
+            return Advertisement()
+
+        if data[1] & 1 << 4:
+            gap_adv_type = {
+                    0x13: "ADV_IND",
+                    0x15: "ADV_DIRECT_IND",
+                    0x12: "ADV_SCAN_IND",
+                    0x10: "ADV_NONCONN_IND",
+                    0x1a: "SCAN_RSP_TO_ADV",
+                    0x1b: "SCAN_RSP",
+                    }[data[1]]
+        else:
+            gap_adv_type = []
+            if data[1] & 1 << 0:
+                gap_adv_type.append("Connectable")
+            if data[1] & 1 << 1:
+                gap_adv_type.append("Scannable")
+            if data[1] & 1 << 2:
+                gap_adv_type.append("Directed")
+            if data[1] & 1 << 3:
+                gap_adv_type.append("Scan Response")
+            if data[1] & 1 << 5:
+                gap_adv_type.append("Incomplete, more data to come")
+            elif data[1] & 1 << 6:
+                gap_adv_type.append("Incomplete, truncated")
+            gap_adv_type = ','.join(gap_adv_type)
+        # ignore data[2] - reserved for future use
+        gap_addr_type = {
+                0x00: "PUBLIC",
+                0x01: "RANDOM",
+                0x02: "PUBLIC_IDENTITY",
+                0x03: "RANDOM_STATIC",
+                0xff: "ANONYMOUS"}[
+            data[3]
+        ]
+        gap_addr = data[4:10]
+        primary_phy = {0x01: "LE 1M",
+                       0x03: "LE Coded"
+                      }[data[10]]
+        secondary_phy = {0x00: "No",
+                         0x01: "LE 1M",
+                         0x02: "LE 2M",
+                         0x03: "LE Coded"
+                        }[data[11]]
+        if data[12] == 0xff:
+            advertising_sid = "no ADI field"
+        else:
+            advertising_sid = "NYI"
+        if data[13] == 0x7f:
+            tx_power = None
+        else:
+            tx_power = -127 + data[13] ## dBm
+        rssi = rssi_from_byte(data[14])
+        periodic_advertising_interval = ((data[16] << 16) + data[15]) * 1.25 ## ms
+        direct_addr_type = {
+                0x00: "PUBLIC",
+                0x01: "STATIC",
+                0x02: "RESOLVABLE_PRIVATE1",
+                0x03: "RESOLVABLE_PRIVATE2",
+                0xfe: "RESOLVABLE_PRIVATE_UNABLE_TO_RESOLVE"
+                }[data[17]]
+        direct_addr = data[18:24]
+
+        advertisement = Advertisement(address=BDAddress(gap_addr), tx_power=tx_power, rssi=rssi, data_format="extended", raw_data=data)
+        advertisement.type = gap_adv_type
+        advertisement.address_type = gap_addr_type
+        advertisement.primary_phy = primary_phy
+        advertisement.secondary_phy = secondary_phy
+        advertisement.periodic_advertising_interval = periodic_advertising_interval
+        advertisement.direct_addr_type = direct_addr_type
+        advertisement.direct_addr = direct_addr
+
+        return AdvertisingDataConverters.parse_advertisement_data(
+                advertisement, 25, data[24])
+
+    @classmethod
+    def parse_advertisement_data(cls, advertisement, init_pos, datalen):
+        data = advertisement.raw_data
+        data_info = "Data: {}".format(hex_string(data))
+        pos_info = "POS : {}".format(
+            "".join("{:02} ".format(x) for x in range(0, len(data)))
+        )
+        log.debug(data_info)
+        log.debug(pos_info)
+        pos = init_pos
+        while pos < init_pos + datalen:
             log.debug("POS={}".format(pos))
             length = data[pos]
             gap_type = data[pos + 1]
