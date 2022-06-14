@@ -30,6 +30,7 @@ class BluetoothHCIAdapter(Adapter):
     def open(self):
         self._socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_RAW, socket.BTPROTO_HCI)
         self._socket.bind((self.device_id,))
+        self._le_features = threading.Condition()
         self._socket_poll_thread = threading.Thread(target=self._socket_poller, name='HCISocketPoller')
         self._socket_poll_thread.setDaemon(True)
         self._socket_poll_thread.start()
@@ -52,6 +53,9 @@ class BluetoothHCIAdapter(Adapter):
 
     def _set_filter(self, data):
         self._socket.setsockopt(socket.SOL_HCI, socket.HCI_FILTER, data)
+
+    def _reset_filter(self):
+        self._set_filter(self._last_filter)
 
     def _socket_poller(self):
         while self._keep_running:
@@ -89,9 +93,29 @@ class BluetoothHCIAdapter(Adapter):
         bd_address = hci_dev_info[2:8]
         return Device(address=BDAddress(bd_address), name=device_name)
 
+    def has_extended_advertising(self):
+        if hasattr(self, 'extended_advertising'):
+            return self.extended_advertising
+        else:
+            self.sync_read_le_local_features()
+            return self.extended_advertising
 
+    def sync_read_le_local_features(self):
+        self._le_features.acquire()
+        self.set_features_filter()
+        cmd = struct.pack("<BHB", HCI_COMMAND_PKT, LE_READ_LOCAL_SUPPORTED_FEATURES, 0)
+        self.write_buffer(cmd)
+        self._le_features.wait()
 
+    def set_features_filter(self):
+        typeMask   = 1 << HCI_EVENT_PKT
+        eventMask1 = (1 << EVT_CMD_COMPLETE) | (1 << EVT_CMD_STATUS)
+        eventMask2 = 0
+        opcode     = 0
 
+        self._last_filter = self._socket.getsockopt(socket.SOL_HCI, socket.HCI_FILTER)
+        filter = struct.pack("<LLLH", typeMask, eventMask1, eventMask2, opcode)
+        self._set_filter(filter)
 
     # -------------------------------------------------
     # Adapter power control
@@ -115,6 +139,12 @@ class BluetoothHCIAdapter(Adapter):
         self._set_filter(filter)
 
     def set_scan_parameters(self):
+        if self.has_extended_advertising():
+            self.set_extended_scan_parameters()
+        else:
+            self.set_simple_scan_parameters()
+
+    def set_simple_scan_parameters(self):
         len = 7
         type = SCAN_TYPE_ACTIVE
         internal = 0x0010   #  ms * 1.6
@@ -123,17 +153,42 @@ class BluetoothHCIAdapter(Adapter):
         filter = FILTER_POLICY_NO_WHITELIST
         cmd = struct.pack("<BHBBHHBB", HCI_COMMAND_PKT, LE_SET_SCAN_PARAMETERS_CMD, len,
                           type, internal, window, own_addr, filter )
-
         self.write_buffer(cmd)
 
+    def set_extended_scan_parameters(self):
+        len = 8
+        own_addr = LE_PUBLIC_ADDRESS
+        filter = FILTER_POLICY_NO_WHITELIST
+        phys = 0x01
+        type = SCAN_TYPE_ACTIVE
+        interval = 0x0010   #  ms * 1.6
+        window = 0x0010     #  ms * 1.6
+        cmd = struct.pack("<BHBBBBBHH", HCI_COMMAND_PKT, LE_SET_EXTENDED_SCAN_PARAMETERS_CMD,
+                          len, own_addr, filter, phys, type, interval, window)
+        self.write_buffer(cmd)
 
     def set_scan_enable(self, enabled=False, filter_duplicates=False):
+        if self.has_extended_advertising():
+            self.set_extended_scan_enable(enabled, filter_duplicates)
+        else:
+            self.set_simple_scan_enable(enabled, filter_duplicates)
+
+    def set_simple_scan_enable(self, enabled, filter_duplicates):
         len = 2
         enable = 0x01 if enabled else 0x00
         dups   = 0x01 if filter_duplicates else 0x00
         cmd = struct.pack("<BHBBB", HCI_COMMAND_PKT, LE_SET_SCAN_ENABLE_CMD, len, enable, dups)
         self.write_buffer(cmd)
 
+    def set_extended_scan_enable(self, enabled, filter_duplicates):
+        len = 6
+        enable = 0x01 if enabled else 0x00
+        dups   = 0x01 if filter_duplicates else 0x00
+        duration = 0x0000
+        period = 0x0000
+        cmd = struct.pack("<BHBBBHH", HCI_COMMAND_PKT, LE_SET_EXTENDED_SCAN_ENABLE_CMD,
+                          len, enable, dups, duration, period)
+        self.write_buffer(cmd)
 
     # -------------------------------------------------
     # Advertising
@@ -212,24 +267,55 @@ class BluetoothHCIAdapter(Adapter):
         if (data[5] << 8) + data[4] == LE_SET_SCAN_PARAMETERS_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Parameters Set');
-
+            else:
+                log.debug('LE Set Scan Parameters Error: 0x%x' % (data[6]))
         elif (data[5] << 8) + data[4] == LE_SET_SCAN_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Enable Set')
-
+            else:
+                log.debug('LE Set Scan Enable Error: 0x%x' % (data[6]))
+        elif (data[5] << 8) + data[4] == LE_SET_EXTENDED_SCAN_PARAMETERS_CMD:
+            if data[6] == HCI_SUCCESS:
+                log.debug('LE Extended Scan Parameters Set');
+            else:
+                log.debug('LE Set Extended Scan Parameters Error: 0x%x' % (data[6]))
+        elif (data[5] << 8) + data[4] == LE_SET_EXTENDED_SCAN_ENABLE_CMD:
+            if data[6] == HCI_SUCCESS:
+                log.debug('LE Extended Scan Enable Set')
+            else:
+                log.debug('LE Set Extended Scan Enable Error: 0x%x' % (data[6]))
         elif (data[5] << 8) + data[4] == LE_SET_ADVERTISING_PARAMETERS_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Parameters Set')
-
+            else:
+                log.debug('LE Set Advertising Parameters Error: 0x%x' % (data[6]))
         elif (data[5] << 8) + data[4] == LE_SET_ADVERTISING_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertising Data Set')
+            else:
+                log.debug('LE Set Advertising Data Error: 0x%x' % (data[6]))
         elif (data[5] << 8) + data[4] == LE_SET_SCAN_RESPONSE_DATA_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Scan Response Data Set')
+            else:
+                log.debug('LE Set Scan Response Data Error: 0x%x' % (data[6]))
         elif (data[5] << 8) + data[4] == LE_SET_ADVERTISE_ENABLE_CMD:
             if data[6] == HCI_SUCCESS:
                 log.debug('LE Advertise Enable Set')
+            else:
+                log.debug('LE Set Advertise Enable Error: 0x%x' % (data[6]))
+        elif (data[5] << 8) + data[4] == LE_READ_LOCAL_SUPPORTED_FEATURES:
+            self._le_features.acquire()
+            if data[6] == HCI_SUCCESS:
+                features, = struct.unpack("<Q", data[7:15])
+                self.extended_advertising = bool(features & 1 << 12)
+                log.debug('LE Local Supported Features: 0x%x' % (features))
+                log.debug('extended advertising: %s' % (str(self.extended_advertising)))
+            else:
+                log.debug('LE Read Local Supported Features Error: 0x%x' % (data[6]))
+            self._reset_filter()
+            self._le_features.notify()
+            self._le_features.release()
 
     def _handle_disconnection_complete(self, data):
         log.debug("EVT_DISCONN_COMPLETE")
@@ -247,8 +333,12 @@ class BluetoothHCIAdapter(Adapter):
         if hci_packet.subevent_code == EVT_LE_ADVERTISING_REPORT:
             log.debug('LE Advertising Report')
             if self.on_advertising_data:
-
                 advertisement = AdvertisingDataConverters.from_hcipacket(hci_packet)
+                self.on_advertising_data(advertisement)
+        elif hci_packet.subevent_code == EVT_LE_EXTENDED_ADVERTISING_REPORT:
+            log.debug('LE Extended Adversiting Report')
+            if self.on_advertising_data:
+                advertisement = AdvertisingDataConverters.from_extended_hcipacket(hci_packet)
                 self.on_advertising_data(advertisement)
         else:
             log.warning("TODO: unhandled HCI Meta Event packet, type={}".format(hci_packet))

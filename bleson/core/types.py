@@ -359,7 +359,14 @@ class Advertisement(ValueObject):
           Advertisement(flags=0x06, name='bleson', txpower=0, uuid16s=[], uuid128s=[], rssi=-99, mfg_data=None)
 
        """
-    def __init__(self, name=None, address=None, rssi=None, tx_power=None, raw_data=None):
+    def __init__(self,
+                 name=None,
+                 address=None,
+                 rssi=None,
+                 tx_power=None,
+                 data_format="simple",
+                 raw_data=None
+                ):
         #TODO: use kwargs
         self.flags      =   6   # uint8         # default to LE_GENERAL_DISCOVERABLE | BREDR_NOT_SUPPORTED
         self.type = None
@@ -382,7 +389,14 @@ class Advertisement(ValueObject):
         self.uri    =   None        # unit8
         self.mfg_data = None        # unit8
         self.rssi = rssi            # really only part of an Advertisement Report...
+        ## extended
+        self.primary_phy = None
+        self.secondary_phy = None
+        self.periodic_advertising_interval = None
+        self.direct_addr_type = None
+        self.direct_addr = None
 
+        self.data_format = data_format
         self.raw_data = raw_data
         log.debug(self)
 
