@@ -27,7 +27,10 @@ class HCIPayload:
                 log.debug("VO len={} data={} bytes={}".format(len(vo), vo, bytes(vo)))
                 new_len += len(vo)
 
-            new_data = self.data + struct.pack("<BB", 1 + new_len, tag) + bytes(vo)
+            new_data = self.data + struct.pack("<BB", 1 + new_len, tag)
+            
+            for vo in value:
+                new_data = new_data + bytes(vo)
         else:
             new_data = self.data + struct.pack("<BB", 1 + len(value), tag) + bytes(value)
 
