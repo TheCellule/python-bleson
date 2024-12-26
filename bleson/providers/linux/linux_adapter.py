@@ -114,7 +114,7 @@ class BluetoothHCIAdapter(Adapter):
         opcode     = 0
 
         self._last_filter = self._socket.getsockopt(socket.SOL_HCI, socket.HCI_FILTER)
-        filter = struct.pack("<LLLH", typeMask, eventMask1, eventMask2, opcode)
+        filter = struct.pack("<LLLHxx", typeMask, eventMask1, eventMask2, opcode)
         self._set_filter(filter)
 
     # -------------------------------------------------
@@ -135,7 +135,7 @@ class BluetoothHCIAdapter(Adapter):
         eventMask2 = 1 << (EVT_LE_META_EVENT - 32)
         opcode     = 0
 
-        filter = struct.pack("<LLLH", typeMask, eventMask1, eventMask2, opcode)
+        filter = struct.pack("<LLLHxx", typeMask, eventMask1, eventMask2, opcode)
         self._set_filter(filter)
 
     def set_scan_parameters(self):
@@ -199,7 +199,7 @@ class BluetoothHCIAdapter(Adapter):
         eventMask2 = 1 << (EVT_LE_META_EVENT - 32)
         opcode     = 0
 
-        filter = struct.pack("<LLLH", typeMask, eventMask1, eventMask2, opcode)
+        filter = struct.pack("<LLLHxx", typeMask, eventMask1, eventMask2, opcode)
         self._set_filter(filter)
 
     def set_advertise_enable(self, enabled):
